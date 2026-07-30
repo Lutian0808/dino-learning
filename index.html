@@ -1,0 +1,3317 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="恐龙学习台">
+<meta name="theme-color" content="#4CAF50">
+<meta name="description" content="恐龙主题每日学习工作台，适合4-6岁幼儿">
+<link rel="manifest" href="/tiger-learning/manifest.json">
+<link rel="apple-touch-icon" href="/tiger-learning/icon-192.png">
+<title>🦕 恐龙学习工作台</title>
+<style>
+:root {
+  --primary: #4CAF50; --primary-dark: #388E3C; --primary-light: #E8F5E9;
+  --accent: #FFC107; --accent-light: #FFF8E1;
+  --green: #66BB6A; --green-light: #E8F5E9;
+  --blue: #42A5F5; --blue-light: #E3F2FD;
+  --purple: #AB47BC; --purple-light: #F3E5F5;
+  --pink: #EC407A; --pink-light: #FCE4EC;
+  --orange: #FF7043; --orange-light: #FBE9E7;
+  --teal: #26A69A; --teal-light: #E0F2F1;
+  --bg: #F1F8E9; --card-bg: #FFFFFF;
+  --text: #2E3B1F; --text-light: #6B8E5A;
+  --border: #C8E6C9;
+  --shadow: 0 4px 12px rgba(76, 175, 80, 0.12);
+  --radius: 16px;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: "PingFang SC","Microsoft YaHei","Hiragino Sans GB",sans-serif;
+  background: var(--bg); color: var(--text); line-height: 1.6; min-height: 100vh;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ===== 顶部 ===== */
+.topbar {
+  background: linear-gradient(135deg,#4CAF50 0%,#66BB6A 50%,#81C784 100%);
+  color: white; padding: 10px 20px; display: flex; align-items: center;
+  justify-content: space-between; box-shadow: 0 2px 10px rgba(76,175,80,0.25);
+  position: sticky; top: 0; z-index: 100; flex-wrap: wrap; gap: 8px;
+}
+.topbar-left { display: flex; align-items: center; gap: 10px; }
+.dino-logo { font-size: 30px; animation: bounce 2s infinite; }
+@keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-4px)} }
+.topbar h1 { font-size: 18px; font-weight: 800; }
+.topbar-sub { font-size: 11px; opacity: 0.9; }
+.topbar-right { display: flex; gap: 8px; flex-wrap: wrap; }
+.top-badge { background: rgba(255,255,255,0.25); padding: 4px 10px; border-radius: 16px; font-size: 12px; font-weight: 600; }
+
+/* ===== 布局：左任务栏 + 右内容 ===== */
+.layout { display: flex; height: calc(100vh - 56px); }
+
+/* ===== 左侧任务栏 ===== */
+.sidebar {
+  width: 240px; background: white; border-right: 2px solid var(--border);
+  overflow-y: auto; flex-shrink: 0; padding: 12px 0;
+}
+.sidebar-section { padding: 0 14px 8px; }
+.sidebar-section h3 {
+  font-size: 11px; color: var(--text-light); letter-spacing: 1px;
+  margin: 8px 0 6px; padding-top: 6px; border-top: 1px solid var(--border);
+}
+.sidebar-section:first-child h3 { border-top: none; padding-top: 0; }
+
+/* 天数选择器 */
+.day-selector {
+  display: flex; align-items: center; gap: 4px; margin: 4px 0 8px;
+}
+.day-selector button {
+  width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--border);
+  background: white; font-size: 16px; cursor: pointer; font-weight: 700;
+  color: var(--primary-dark); display: flex; align-items: center; justify-content: center;
+}
+.day-selector button:hover { background: var(--primary-light); }
+.day-selector .day-num {
+  font-size: 18px; font-weight: 800; color: var(--primary-dark); min-width: 60px; text-align: center;
+}
+.day-selector .day-badge {
+  font-size: 10px; background: var(--green-light); color: var(--green);
+  padding: 2px 8px; border-radius: 10px; font-weight: 600;
+}
+
+/* 模块导航 */
+.module-nav-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 14px; margin: 2px 0; border-radius: 10px;
+  cursor: pointer; font-size: 14px; font-weight: 600;
+  transition: all 0.2s; border-left: 3px solid transparent;
+}
+.module-nav-item:hover { background: var(--primary-light); }
+.module-nav-item.active {
+  background: var(--primary-light); border-left-color: var(--primary);
+  color: var(--primary-dark); font-weight: 700;
+}
+.module-nav-item.completed { opacity: 0.7; }
+.module-nav-item .nav-icon { font-size: 20px; width: 28px; text-align: center; }
+.module-nav-item .nav-check {
+  margin-left: auto; font-size: 14px; color: var(--green); display: none;
+}
+.module-nav-item.completed .nav-check { display: block; }
+
+/* 底部统计 */
+.sidebar-stats {
+  padding: 10px 14px; margin-top: 8px; border-top: 1px solid var(--border);
+}
+.sidebar-stats .stat-row {
+  display: flex; justify-content: space-between; font-size: 12px;
+  padding: 3px 0; color: var(--text-light);
+}
+.sidebar-stats .stat-row strong { color: var(--primary-dark); }
+
+/* ===== 右侧内容区 ===== */
+.content {
+  flex: 1; overflow-y: auto; padding: 20px 24px;
+}
+
+/* 进度条 */
+.progress-bar-wrap {
+  background: var(--primary-light); border-radius: 12px; height: 10px;
+  margin-bottom: 16px; overflow: hidden;
+}
+.progress-bar-fill {
+  background: linear-gradient(90deg, var(--primary), var(--green));
+  height: 100%; border-radius: 12px; transition: width 0.5s;
+}
+.progress-text {
+  font-size: 12px; color: var(--text-light); margin-bottom: 6px;
+  display: flex; justify-content: space-between;
+}
+
+/* 模块内容卡片 */
+.module-panel {
+  background: var(--card-bg); border-radius: var(--radius); padding: 24px;
+  box-shadow: var(--shadow); border: 2px solid var(--border);
+  min-height: 300px; position: relative;
+}
+.module-panel.poem { border-top: 5px solid var(--purple); }
+.module-panel.characters { border-top: 5px solid var(--blue); }
+.module-panel.math { border-top: 5px solid var(--green); }
+.module-panel.english { border-top: 5px solid var(--pink); }
+.module-panel.thinking { border-top: 5px solid var(--accent); }
+.module-panel.science { border-top: 5px solid var(--orange); }
+.module-panel.exercise { border-top: 5px solid var(--teal); }
+
+.panel-header {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 16px;
+  padding-bottom: 12px; border-bottom: 2px dashed var(--border);
+}
+.panel-icon { font-size: 32px; }
+.panel-title { font-size: 22px; font-weight: 800; flex: 1; }
+.panel-time { font-size: 13px; color: var(--text-light); background: var(--bg); padding: 3px 10px; border-radius: 10px; }
+.panel-body { font-size: 16px; line-height: 2; }
+
+/* 各模块内容样式 */
+.poem-title { font-size: 20px; font-weight: 700; color: var(--purple); margin-bottom: 4px; }
+.poem-author { font-size: 14px; color: var(--text-light); margin-bottom: 14px; }
+.poem-lines { font-size: 22px; line-height: 2.2; text-align: center; padding: 20px; background: var(--purple-light); border-radius: 14px; font-weight: 700; letter-spacing: 3px; }
+
+.char-grid { display: flex; gap: 16px; margin: 16px 0; justify-content: center; flex-wrap: wrap; }
+.char-box { background: var(--blue-light); border-radius: 14px; padding: 16px 24px; text-align: center; min-width: 90px; }
+.char-box .char { font-size: 48px; font-weight: 900; color: var(--blue); display: block; }
+.char-box .pinyin { font-size: 14px; color: var(--text-light); }
+.char-desc { font-size: 15px; color: var(--text); background: var(--bg); padding: 8px 14px; border-radius: 8px; margin: 8px 0; }
+
+.math-q { background: var(--green-light); padding: 14px 18px; border-radius: 12px; margin: 10px 0; font-size: 18px; font-weight: 700; }
+.math-answer { font-size: 14px; color: var(--text-light); margin-top: 4px; display: none; }
+.math-answer.show { display: block; }
+.show-answer-btn { background: var(--green); color: white; border: none; padding: 6px 16px; border-radius: 8px; font-size: 13px; cursor: pointer; margin-top: 8px; font-weight: 600; }
+
+.eng-word { display: flex; align-items: center; gap: 14px; background: var(--pink-light); padding: 14px 20px; border-radius: 12px; margin: 10px 0; }
+.eng-word .emoji { font-size: 36px; }
+.eng-word .word { font-size: 26px; font-weight: 800; color: var(--pink); }
+.eng-word .meaning { font-size: 18px; color: var(--text); }
+.eng-phrase { background: var(--accent-light); padding: 14px 20px; border-radius: 12px; margin-top: 12px; font-weight: 700; text-align: center; font-size: 18px; }
+
+.thinking-content { background: var(--accent-light); padding: 16px 20px; border-radius: 12px; font-size: 16px; margin: 10px 0; }
+.thinking-answer { font-size: 14px; color: var(--text-light); margin-top: 6px; display: none; }
+.thinking-answer.show { display: block; }
+
+.sci-content { background: var(--orange-light); padding: 16px 20px; border-radius: 12px; font-size: 16px; margin: 10px 0; line-height: 1.9; }
+
+.exercise-item { display: flex; align-items: center; gap: 10px; background: var(--teal-light); padding: 12px 18px; border-radius: 12px; margin: 8px 0; font-size: 17px; font-weight: 700; }
+
+.guide-box { background: linear-gradient(135deg,#FFF8E1 0%,#E8F5E9 100%); border-left: 4px solid var(--accent); padding: 12px 16px; border-radius: 8px; margin: 14px 0; font-size: 14px; }
+.guide-box .guide-label { font-weight: 700; color: var(--primary-dark); }
+.task-box { background: var(--green-light); border-left: 4px solid var(--green); padding: 10px 16px; border-radius: 8px; margin-top: 10px; font-size: 15px; font-weight: 700; }
+.task-box .task-label { color: var(--green); }
+
+/* 打卡按钮 */
+.checkin-btn {
+  display: block; width: 100%; padding: 14px; border: none; border-radius: 12px;
+  font-size: 17px; font-weight: 700; cursor: pointer; margin-top: 16px;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  color: white; transition: all 0.3s; text-align: center;
+}
+.checkin-btn:hover { transform: scale(1.01); box-shadow: 0 4px 12px rgba(76,175,80,0.4); }
+.checkin-btn.done { background: var(--green); }
+
+/* 底部积分奖励区 */
+.rewards-area {
+  background: white; border-radius: var(--radius); padding: 18px; margin-top: 16px;
+  box-shadow: var(--shadow); border: 2px solid var(--border);
+}
+.rewards-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+.rewards-header h3 { font-size: 16px; font-weight: 800; color: var(--primary-dark); }
+.points-big { font-size: 22px; font-weight: 900; color: var(--accent); }
+.add-reward-btn { background: var(--accent); color: var(--text); border: none; padding: 6px 14px; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; }
+.reward-list { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
+.reward-item { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 10px; background: var(--bg); border: 2px solid var(--border); }
+.reward-item.claimed { background: var(--green-light); opacity: 0.7; }
+.reward-info { flex: 1; }
+.reward-name { font-weight: 700; font-size: 14px; }
+.reward-cost { font-size: 12px; color: var(--text-light); }
+.reward-actions { display: flex; gap: 6px; }
+.reward-actions button { border: none; padding: 5px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; }
+.btn-claim { background: var(--accent); color: var(--text); }
+.btn-claim:disabled { background: #ccc; }
+.btn-edit { background: var(--blue); color: white; }
+.btn-del { background: #EF5350; color: white; }
+
+/* 成就徽章 */
+.badges { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+.badge { padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; background: var(--bg); border: 2px solid var(--border); color: var(--text-light); }
+.badge.unlocked { background: var(--accent-light); border-color: var(--accent); color: var(--primary-dark); }
+
+/* 奖励弹窗 */
+.modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 200; align-items: center; justify-content: center; }
+.modal-overlay.active { display: flex; }
+.modal-box { background: white; border-radius: var(--radius); padding: 20px; max-width: 400px; width: 90%; }
+.modal-box h3 { font-size: 18px; margin-bottom: 12px; }
+.modal-box label { display: block; font-size: 13px; font-weight: 600; margin: 8px 0 4px; color: var(--text-light); }
+.modal-box input, .modal-box textarea { width: 100%; padding: 8px 12px; border: 2px solid var(--border); border-radius: 8px; font-size: 14px; font-family: inherit; }
+.modal-box textarea { height: 60px; resize: vertical; }
+.modal-btns { display: flex; gap: 8px; margin-top: 12px; justify-content: flex-end; }
+.modal-btns button { border: none; padding: 8px 16px; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer; }
+.btn-save { background: var(--primary); color: white; }
+.btn-cancel { background: #ccc; color: var(--text); }
+
+/* 响应式 */
+@media (max-width: 768px) {
+  .layout { flex-direction: column; height: auto; }
+  .sidebar { width: 100%; height: auto; border-right: none; border-bottom: 2px solid var(--border); padding: 8px; }
+  .sidebar-section:first-child { display: flex; align-items: center; gap: 8px; }
+  .sidebar-section h3 { border-top: none; padding-top: 0; margin: 0; font-size: 10px; }
+  .module-nav-item { padding: 8px 10px; font-size: 12px; margin: 0; border-left: none; border-bottom: 2px solid transparent; }
+  .module-nav-item.active { border-left: none; border-bottom-color: var(--primary); }
+  .content { padding: 12px; }
+  .panel-body { font-size: 14px; }
+  .poem-lines { font-size: 18px; }
+  .char-box .char { font-size: 36px; }
+  .eng-word .word { font-size: 20px; }
+}
+</style>
+</head>
+<body>
+
+<!-- 顶部 -->
+<div class="topbar">
+  <div class="topbar-left">
+    <span class="dino-logo">🦕</span>
+    <div>
+      <h1>恐龙学习工作台</h1>
+      <div class="topbar-sub">4-6岁 · 每日60分钟 · 7大模块</div>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <div class="top-badge">🔥 连续 <span id="streakNum">0</span> 天</div>
+    <div class="top-badge">🪙 <span id="topPoints">0</span> 分</div>
+    <div class="top-badge">⭐ <span id="totalStars">0</span> 星</div>
+  </div>
+</div>
+
+<div class="layout">
+  <!-- 左侧任务栏 -->
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <h3>📅 今日任务</h3>
+      <div class="day-selector">
+        <button onclick="prevDay()">◀</button>
+        <span class="day-num" id="dayLabel">第1天</span>
+        <button onclick="nextDay()">▶</button>
+      </div>
+      <span class="day-badge" id="dayBadge">0/7 完成</span>
+    </div>
+    <div class="sidebar-section">
+      <h3>📚 七大模块</h3>
+      <div id="moduleNav"></div>
+    </div>
+    <div class="sidebar-stats">
+      <div class="stat-row"><span>🪙 总积分</span><strong id="sPoints">0</strong></div>
+      <div class="stat-row"><span>⭐ 总星星</span><strong id="sStars">0</strong></div>
+      <div class="stat-row"><span>🏆 完成天数</span><strong id="sDays">0</strong></div>
+    </div>
+    <div style="padding:10px 14px;">
+      <div class="badges" id="badges">
+        <div class="badge" id="badge1">🥚 1天</div>
+        <div class="badge" id="badge3">🦎 3天</div>
+        <div class="badge" id="badge5">🦕 5天</div>
+        <div class="badge" id="badge7">🦖 7天</div>
+        <div class="badge" id="badge15">👑 15天</div>
+        <div class="badge" id="badge30">🏆 30天</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- 右侧内容区 -->
+  <main class="content">
+    <!-- 进度条 -->
+    <div class="progress-text"><span>今日完成进度</span><span id="progressLabel">0/7</span></div>
+    <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressBar" style="width:0%"></div></div>
+
+    <!-- 模块内容面板 -->
+    <div class="module-panel" id="modulePanel"></div>
+
+    <!-- 积分奖励区 -->
+    <div class="rewards-area">
+      <div class="rewards-header">
+        <h3>🪙 积分奖励中心 <span class="points-big" id="pointsTotal">0</span> 分</h3>
+        <button class="add-reward-btn" onclick="openRewardModal()">➕ 添加奖励</button>
+      </div>
+      <p style="font-size:12px;color:var(--text-light);margin:4px 0;">每完成一个模块 +10 积分</p>
+      <div class="reward-list" id="rewardList"></div>
+    </div>
+  </main>
+</div>
+
+<!-- 奖励弹窗 -->
+<div class="modal-overlay" id="rewardModal">
+  <div class="modal-box">
+    <h3 id="modalTitle">添加奖励</h3>
+    <label>奖励名称</label>
+    <input type="text" id="rewardName" placeholder="例如：看一集动画片">
+    <label>所需积分</label>
+    <input type="number" id="rewardCost" placeholder="例如：50" min="1">
+    <label>描述（可选）</label>
+    <textarea id="rewardDesc" placeholder="例如：可以看20分钟动画片"></textarea>
+    <input type="hidden" id="rewardEditId" value="">
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeRewardModal()">取消</button>
+      <button class="btn-save" onclick="saveReward()">保存</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const DATA = {
+  "meta": {
+    "title": "Tiger 每日学习工作台",
+    "targetAge": "4-6岁（幼儿园中班、大班）",
+    "dailyMinutes": 60,
+    "moduleMinutes": 8,
+    "modules": [
+      "古诗",
+      "识字",
+      "算数",
+      "英语",
+      "思维训练",
+      "科普",
+      "运动游戏"
+    ]
+  },
+  "days": {
+    "day1": {
+      "date": "第1天",
+      "poem": {
+        "title": "咏鹅",
+        "author": "唐·骆宾王",
+        "lines": [
+          "鹅，鹅，鹅，",
+          "曲项向天歌。",
+          "白毛浮绿水，",
+          "红掌拨清波。"
+        ],
+        "guide": "宝宝，你看小鹅在水里游，脖子弯弯的，多可爱呀！我们一起念一念。",
+        "task": "跟读2遍，背给爸爸妈妈听"
+      },
+      "characters": {
+        "items": [
+          {
+            "char": "天",
+            "pinyin": "tiān",
+            "desc": "天上有什么？太阳、月亮、星星都在天上哦！"
+          },
+          {
+            "char": "白",
+            "pinyin": "bái",
+            "desc": "白白的云朵，白白的雪，白色真干净！"
+          },
+          {
+            "char": "水",
+            "pinyin": "shuǐ",
+            "desc": "水可以喝，可以洗手，小鱼在水里游。"
+          }
+        ],
+        "task": "每个字读3遍，找一找生活中有没有这些字"
+      },
+      "math": {
+        "title": "认识数字1-5",
+        "questions": [
+          "数一数：🍎🍎🍎 有几个苹果？",
+          "数一数：⭐⭐⭐⭐⭐ 有几颗星星？",
+          "比一比：2和3，哪个大？"
+        ],
+        "answers": [
+          "3个",
+          "5个",
+          "3大"
+        ],
+        "guide": "宝宝用手指指着数，一个一个数，不要着急哦！",
+        "task": "完成3道题，全对贴一颗星⭐"
+      },
+      "english": {
+        "words": [
+          {
+            "word": "apple",
+            "meaning": "苹果",
+            "emoji": "🍎"
+          },
+          {
+            "word": "banana",
+            "meaning": "香蕉",
+            "emoji": "🍌"
+          }
+        ],
+        "phrase": "Good morning!（早上好！）",
+        "guide": "宝宝跟读：apple苹果🍎，banana香蕉🍌，早上好Good morning！",
+        "task": "每个单词读3遍，对妈妈说Good morning!"
+      },
+      "thinking": {
+        "title": "找不同",
+        "content": "看看这两排小动物：🐶🐱🐶🐱🐶 和 🐶🐱🐶🐶🐱，哪里不一样呢？",
+        "answer": "第4个不同，第一排是猫咪，第二排是小狗",
+        "guide": "引导宝宝一个一个对比，找出不一样的地方。",
+        "task": "找出不同，再说一说为什么"
+      },
+      "science": {
+        "title": "为什么会下雨？",
+        "content": "天上的云朵里有很多小水滴。小水滴越来越多、越来越重，就从天上掉下来啦，这就是下雨！就像宝宝洗澡时水从花洒流下来一样。",
+        "guide": "下雨的时候带宝宝看看窗外，问：雨是从哪里来的呀？",
+        "task": "说说看，下雨天你要带什么？"
+      },
+      "exercise": {
+        "title": "小动物模仿操",
+        "items": [
+          "🐰 学小兔跳：跳10下",
+          "🐘 学大象走：走20步",
+          "🐧 学企鹅走：走15步"
+        ],
+        "guide": "妈妈喊口令，宝宝来模仿，一起动起来！",
+        "task": "完成3种动物模仿，出一身汗最好！"
+      }
+    },
+    "day2": {
+      "date": "第2天",
+      "poem": {
+        "title": "春晓",
+        "author": "唐·孟浩然",
+        "lines": [
+          "春眠不觉晓，",
+          "处处闻啼鸟。",
+          "夜来风雨声，",
+          "花落知多少。"
+        ],
+        "guide": "宝宝，春天早上醒来，听到小鸟在唱歌，多好听呀！",
+        "task": "跟读2遍，背给爸爸妈妈听"
+      },
+      "characters": {
+        "items": [
+          {
+            "char": "春",
+            "pinyin": "chūn",
+            "desc": "春天暖洋洋的，花儿开了，小草绿了。"
+          },
+          {
+            "char": "花",
+            "pinyin": "huā",
+            "desc": "花花真漂亮，红色的花、黄色的花。"
+          },
+          {
+            "char": "鸟",
+            "pinyin": "niǎo",
+            "desc": "小鸟在天上飞，叽叽喳喳唱歌。"
+          }
+        ],
+        "task": "每个字读3遍，找一找生活中有没有这些字"
+      },
+      "math": {
+        "title": "认识数字6-10",
+        "questions": [
+          "数一数：🌸🌸🌸🌸🌸🌸 有几朵花？",
+          "数一数：🐟🐟🐟🐟🐟🐟🐟 有几条鱼？",
+          "比一比：8和6，哪个大？"
+        ],
+        "answers": [
+          "6朵",
+          "7条",
+          "8大"
+        ],
+        "guide": "宝宝慢慢数，数对了奖励一颗星！",
+        "task": "完成3道题，全对贴一颗星⭐"
+      },
+      "english": {
+        "words": [
+          {
+            "word": "cat",
+            "meaning": "猫",
+            "emoji": "🐱"
+          },
+          {
+            "word": "dog",
+            "meaning": "狗",
+            "emoji": "🐶"
+          }
+        ],
+        "phrase": "Thank you!（谢谢你！）",
+        "guide": "宝宝跟读：cat小猫🐱，dog小狗🐶，得到帮助要说Thank you！",
+        "task": "每个单词读3遍，帮妈妈做事后说Thank you"
+      },
+      "thinking": {
+        "title": "图形配对",
+        "content": "找一找家里圆形的东西有哪些？方形的东西有哪些？（碗是圆的，书本是方的）",
+        "answer": "圆形：碗、盘子、硬币；方形：书本、盒子、桌子",
+        "guide": "带宝宝在家里走一走，摸一摸圆圆的和方方的东西。",
+        "task": "找出3个圆形、3个方形的东西"
+      },
+      "science": {
+        "title": "为什么树叶是绿色的？",
+        "content": "树叶里有一种东西叫叶绿素，就像树叶穿了一件绿衣服。有了它，树叶就能晒太阳长大啦！",
+        "guide": "带宝宝摘一片树叶看看，问：树叶是什么颜色的？",
+        "task": "找3片树叶，说说它们的颜色"
+      },
+      "exercise": {
+        "title": "跳跳乐",
+        "items": [
+          "双脚跳：跳15下",
+          "单脚站：每只脚站10秒",
+          "原地跑：跑30秒"
+        ],
+        "guide": "妈妈计时，宝宝加油跳！注意安全哦。",
+        "task": "完成3项运动，喝杯水休息一下"
+      }
+    },
+    "day3": {
+      "date": "第3天",
+      "poem": {
+        "title": "静夜思",
+        "author": "唐·李白",
+        "lines": [
+          "床前明月光，",
+          "疑是地上霜。",
+          "举头望明月，",
+          "低头思故乡。"
+        ],
+        "guide": "宝宝，晚上月亮亮亮的，诗人想念家乡了。",
+        "task": "跟读2遍，背给爸爸妈妈听"
+      },
+      "characters": {
+        "items": [
+          {
+            "char": "月",
+            "pinyin": "yuè",
+            "desc": "月亮弯弯像小船，圆圆像盘子。"
+          },
+          {
+            "char": "明",
+            "pinyin": "míng",
+            "desc": "明天的明，太阳和月亮在一起就是明！"
+          },
+          {
+            "char": "头",
+            "pinyin": "tóu",
+            "desc": "头在脖子上，宝宝点点头、摇摇头。"
+          }
+        ],
+        "task": "每个字读3遍，找一找生活中有没有这些字"
+      },
+      "math": {
+        "title": "5以内的加法",
+        "questions": [
+          "1 + 2 = ？（用手指算）",
+          "2 + 2 = ？（用手指算）",
+          "3 + 1 = ？（用手指算）"
+        ],
+        "answers": [
+          "3",
+          "4",
+          "4"
+        ],
+        "guide": "宝宝伸出手指头，一根一根数，加起来就是答案。",
+        "task": "完成3道题，全对贴一颗星⭐"
+      },
+      "english": {
+        "words": [
+          {
+            "word": "sun",
+            "meaning": "太阳",
+            "emoji": "☀️"
+          },
+          {
+            "word": "moon",
+            "meaning": "月亮",
+            "emoji": "🌙"
+          }
+        ],
+        "phrase": "I love you!（我爱你！）",
+        "guide": "宝宝跟读：sun太阳☀️，moon月亮🌙，对爸爸妈妈说I love you！",
+        "task": "每个单词读3遍，抱抱妈妈说I love you"
+      },
+      "thinking": {
+        "title": "排顺序",
+        "content": "把小动物从小到大排一排：🐭（小）🐷（中）🐘（大），谁排第一？",
+        "answer": "🐭第一，🐷第二，🐘第三",
+        "guide": "引导宝宝观察大小，从小到大排队。",
+        "task": "说说看，谁最大？谁最小？"
+      },
+      "science": {
+        "title": "月亮为什么会变形？",
+        "content": "月亮自己不发光，是太阳照亮的。月亮绕着地球转，我们看到的亮的部分不一样，有时候圆圆的，有时候弯弯的。",
+        "guide": "晚上带宝宝看月亮，问：今天月亮像什么呀？",
+        "task": "画一画你看到的月亮"
+      },
+      "exercise": {
+        "title": "球类游戏",
+        "items": [
+          "滚球：和妈妈对滚10次",
+          "抛球：向上抛接10次",
+          "踢球：踢5下"
+        ],
+        "guide": "找一个软球，在空地上玩，注意安全！",
+        "task": "完成3种球类游戏，开心最重要！"
+      }
+    },
+    "day4": {
+      "date": "第4天",
+      "poem": {
+        "title": "悯农",
+        "author": "唐·李绅",
+        "lines": [
+          "锄禾日当午，",
+          "汗滴禾下土。",
+          "谁知盘中餐，",
+          "粒粒皆辛苦。"
+        ],
+        "guide": "宝宝，农民伯伯种粮食好辛苦，我们要爱惜粮食，不浪费哦！",
+        "task": "跟读2遍，背给爸爸妈妈听"
+      },
+      "characters": {
+        "items": [
+          {
+            "char": "大",
+            "pinyin": "dà",
+            "desc": "大象大，大树大，山也很大。"
+          },
+          {
+            "char": "小",
+            "pinyin": "xiǎo",
+            "desc": "小蚂蚁小，小花小，宝宝以前也小小的。"
+          },
+          {
+            "char": "多",
+            "pinyin": "duō",
+            "desc": "很多很多，数也数不清。"
+          }
+        ],
+        "task": "每个字读3遍，找一找生活中有没有这些字"
+      },
+      "math": {
+        "title": "5以内的减法",
+        "questions": [
+          "3 - 1 = ？（3个苹果拿走1个）",
+          "5 - 2 = ？（5颗糖拿走2颗）",
+          "4 - 3 = ？（4只鸟飞走3只）"
+        ],
+        "answers": [
+          "2",
+          "3",
+          "1"
+        ],
+        "guide": "宝宝用手指，拿走几个就收起几个手指。",
+        "task": "完成3道题，全对贴一颗星⭐"
+      },
+      "english": {
+        "words": [
+          {
+            "word": "red",
+            "meaning": "红色",
+            "emoji": "🔴"
+          },
+          {
+            "word": "blue",
+            "meaning": "蓝色",
+            "emoji": "🔵"
+          }
+        ],
+        "phrase": "How are you?（你好吗？）",
+        "guide": "宝宝跟读：red红色🔴，blue蓝色🔵，见面问好How are you？",
+        "task": "每个单词读3遍，找红色和蓝色的东西"
+      },
+      "thinking": {
+        "title": "分类游戏",
+        "content": "把这些东西分3类：🍎🍌🥕🐶🐱🐟（水果、蔬菜、动物各是什么？）",
+        "answer": "水果：苹果香蕉；蔬菜：胡萝卜；动物：狗猫鱼",
+        "guide": "引导宝宝说一说每个是什么，再分类。",
+        "task": "分成3类，说说为什么这样分"
+      },
+      "science": {
+        "title": "为什么会有白天和黑夜？",
+        "content": "地球像一个大球，它会自己转圈圈。转到对着太阳就是白天，背着太阳就是黑夜啦。就像宝宝转圈圈，看到妈妈和不看到妈妈。",
+        "guide": "用手电筒和球演示，让宝宝理解白天黑夜。",
+        "task": "说说看，白天做什么？黑夜做什么？"
+      },
+      "exercise": {
+        "title": "模仿动物爬",
+        "items": [
+          "🐻 学小熊爬：爬10米",
+          "🦀 学螃蟹横走：走10步",
+          "🐸 学青蛙跳：跳10下"
+        ],
+        "guide": "在地上铺好垫子，宝宝来模仿小动物！",
+        "task": "完成3种爬行，休息一下喝点水"
+      }
+    },
+    "day5": {
+      "date": "第5天",
+      "poem": {
+        "title": "登鹳雀楼",
+        "author": "唐·王之涣",
+        "lines": [
+          "白日依山尽，",
+          "黄河入海流。",
+          "欲穷千里目，",
+          "更上一层楼。"
+        ],
+        "guide": "宝宝，站得高看得远！我们一起来读这首诗。",
+        "task": "跟读2遍，背给爸爸妈妈听"
+      },
+      "characters": {
+        "items": [
+          {
+            "char": "上",
+            "pinyin": "shàng",
+            "desc": "上楼、上山，往上去就是上。"
+          },
+          {
+            "char": "下",
+            "pinyin": "xià",
+            "desc": "下楼、下山，往下去就是下。"
+          },
+          {
+            "char": "山",
+            "pinyin": "shān",
+            "desc": "山很高很大，绿绿的山真好看。"
+          }
+        ],
+        "task": "每个字读3遍，找一找生活中有没有这些字"
+      },
+      "math": {
+        "title": "认识形状",
+        "questions": [
+          "⭕ 是什么形状？（圆形）",
+          "⬜ 是什么形状？（方形）",
+          "🔺 是什么形状？（三角形）"
+        ],
+        "answers": [
+          "圆形",
+          "方形",
+          "三角形"
+        ],
+        "guide": "宝宝看看图，说出形状名字。在家里找找这些形状。",
+        "task": "完成3道题，找家里的形状"
+      },
+      "english": {
+        "words": [
+          {
+            "word": "water",
+            "meaning": "水",
+            "emoji": "💧"
+          },
+          {
+            "word": "milk",
+            "meaning": "牛奶",
+            "emoji": "🥛"
+          }
+        ],
+        "phrase": "Good night!（晚安！）",
+        "guide": "宝宝跟读：water水💧，milk牛奶🥛，睡觉前说Good night！",
+        "task": "每个单词读3遍，睡前说Good night"
+      },
+      "thinking": {
+        "title": "记忆游戏",
+        "content": "妈妈说3样东西：苹果、小猫、太阳。宝宝听完后复述出来。",
+        "answer": "苹果、小猫、太阳",
+        "guide": "先说2样，再增加到3样、4样，慢慢增加难度。",
+        "task": "记住并复述3样东西"
+      },
+      "science": {
+        "title": "彩虹有几种颜色？",
+        "content": "彩虹有7种颜色：红、橙、黄、绿、青、蓝、紫。下雨后太阳出来，天空中就会出现美丽的彩虹！",
+        "guide": "问问宝宝最喜欢什么颜色？彩虹像什么呀？",
+        "task": "画一道彩虹，说出3种颜色"
+      },
+      "exercise": {
+        "title": "平衡游戏",
+        "items": [
+          "金鸡独立：单脚站15秒",
+          "走直线：脚跟碰脚尖走3米",
+          "蹲起：做10个"
+        ],
+        "guide": "妈妈扶着宝宝，注意安全，慢慢来！",
+        "task": "完成3项平衡训练，很棒哦！"
+      }
+    },
+    "day6": {
+      "date": "第6天",
+      "poem": {
+        "title": "寻隐者不遇",
+        "author": "唐·贾岛",
+        "lines": [
+          "松下问童子，",
+          "言师采药去。",
+          "只在此山中，",
+          "云深不知处。"
+        ],
+        "guide": "宝宝，诗人去找朋友，朋友不在家去采药了。",
+        "task": "跟读2遍，背给爸爸妈妈听"
+      },
+      "characters": {
+        "items": [
+          {
+            "char": "云",
+            "pinyin": "yún",
+            "desc": "白云飘在天上，像棉花糖。"
+          },
+          {
+            "char": "雨",
+            "pinyin": "yǔ",
+            "desc": "下雨了，滴答滴答，要打伞。"
+          },
+          {
+            "char": "风",
+            "pinyin": "fēng",
+            "desc": "风吹树叶哗啦啦，风车转呀转。"
+          }
+        ],
+        "task": "每个字读3遍，找一找生活中有没有这些字"
+      },
+      "math": {
+        "title": "10以内的数",
+        "questions": [
+          "数一数：🍎🍎🍎🍎🍎🍎🍎🍎 有几个？",
+          "比一比：7和9，哪个大？",
+          "找规律：1、2、3、？、5，问号是几？"
+        ],
+        "answers": [
+          "8个",
+          "9大",
+          "4"
+        ],
+        "guide": "宝宝慢慢数，找规律时一个一个看。",
+        "task": "完成3道题，全对贴一颗星⭐"
+      },
+      "english": {
+        "words": [
+          {
+            "word": "fish",
+            "meaning": "鱼",
+            "emoji": "🐟"
+          },
+          {
+            "word": "bird",
+            "meaning": "鸟",
+            "emoji": "🐦"
+          }
+        ],
+        "phrase": "Let's go!（我们走吧！）",
+        "guide": "宝宝跟读：fish鱼🐟，bird鸟🐦，出门说Let's go！",
+        "task": "每个单词读3遍，出门时说Let's go"
+      },
+      "thinking": {
+        "title": "猜谜语",
+        "content": "圆圆的，红红的，咬一口，甜又甜。（打一水果）",
+        "answer": "苹果🍎",
+        "guide": "宝宝猜猜看，多想想圆圆的红红的水果是什么。",
+        "task": "猜出谜语，再编一个简单的谜语"
+      },
+      "science": {
+        "title": "鱼为什么能在水里呼吸？",
+        "content": "鱼有鳃，鳃就像鱼的小鼻子，可以从水里吸到氧气。我们人用肺呼吸，鱼用鳃呼吸，真有趣！",
+        "guide": "带宝宝看鱼缸或视频，观察鱼是怎么呼吸的。",
+        "task": "说说看，鱼用什么呼吸？"
+      },
+      "exercise": {
+        "title": "舞蹈律动",
+        "items": [
+          "跟着音乐跳舞：2分钟",
+          "拍手歌：唱3遍",
+          "转圈圈：转5圈"
+        ],
+        "guide": "放宝宝喜欢的儿歌，一起跳起来！",
+        "task": "完成3项活动，开开心心跳一跳"
+      }
+    },
+    "day7": {
+      "date": "第7天",
+      "poem": {
+        "title": "江南",
+        "author": "汉乐府",
+        "lines": [
+          "江南可采莲，",
+          "莲叶何田田。",
+          "鱼戏莲叶间。",
+          "鱼戏莲叶东，",
+          "鱼戏莲叶西。"
+        ],
+        "guide": "宝宝，江南的荷花真漂亮，小鱼在荷叶间游来游去。",
+        "task": "跟读2遍，背给爸爸妈妈听"
+      },
+      "characters": {
+        "items": [
+          {
+            "char": "鱼",
+            "pinyin": "yú",
+            "desc": "小鱼在水里游，游来游去真开心。"
+          },
+          {
+            "char": "叶",
+            "pinyin": "yè",
+            "desc": "树叶绿绿的，荷叶圆圆的。"
+          },
+          {
+            "char": "花",
+            "pinyin": "huā",
+            "desc": "花朵真美丽，红花黄花都好看。"
+          }
+        ],
+        "task": "每个字读3遍，找一找生活中有没有这些字"
+      },
+      "math": {
+        "title": "综合复习",
+        "questions": [
+          "2 + 3 = ？",
+          "5 - 2 = ？",
+          "数一数：🌟🌟🌟🌟🌟🌟🌟🌟🌟🌟 有几颗？"
+        ],
+        "answers": [
+          "5",
+          "3",
+          "10颗"
+        ],
+        "guide": "宝宝这周学了很多，今天来复习一下吧！",
+        "task": "完成3道题，全对贴一颗星⭐"
+      },
+      "english": {
+        "words": [
+          {
+            "word": "star",
+            "meaning": "星星",
+            "emoji": "⭐"
+          },
+          {
+            "word": "tree",
+            "meaning": "树",
+            "emoji": "🌳"
+          }
+        ],
+        "phrase": "I can do it!（我能做到！）",
+        "guide": "宝宝跟读：star星星⭐，tree树🌳，遇到困难说I can do it！",
+        "task": "每个单词读3遍，自信说I can do it"
+      },
+      "thinking": {
+        "title": "走迷宫",
+        "content": "帮小兔子找胡萝卜：小兔🐰在左上角，胡萝卜🥕在右下角，画出走的路线。",
+        "answer": "引导宝宝用手画出路线，从左上到右下",
+        "guide": "可以画在纸上，或用手指在桌上画路线。",
+        "task": "帮小兔找到胡萝卜，说说走的路线"
+      },
+      "science": {
+        "title": "为什么会有四季？",
+        "content": "地球绕着太阳转圈圈，转到不同的地方，天气就不一样。春天暖、夏天热、秋天凉、冬天冷，这就是四季！",
+        "guide": "问宝宝：你最喜欢哪个季节？为什么？",
+        "task": "说说四个季节的名字和特点"
+      },
+      "exercise": {
+        "title": "亲子运动",
+        "items": [
+          "亲子击掌：跳起来击掌10次",
+          "仰卧起坐：做10个（妈妈扶脚）",
+          "亲子深蹲：一起做10个"
+        ],
+        "guide": "爸爸妈妈陪宝宝一起运动，增进感情！",
+        "task": "完成3项亲子运动，击掌庆祝！"
+      }
+    },
+    "day8": {
+      "date": "第8天",
+      "poem": {
+        "title": "画",
+        "author": "唐·王维",
+        "lines": [
+          "远看山有色，",
+          "近听水无声。",
+          "春去花还在，",
+          "人来鸟不惊。"
+        ],
+        "guide": "宝宝，这首诗说的是一幅画，画里的东西不会动哦。",
+        "task": "跟读2遍，背给爸爸妈妈听"
+      },
+      "characters": {
+        "items": [
+          {
+            "char": "日",
+            "pinyin": "rì",
+            "desc": "太阳也叫日，日出东方，照亮大地。"
+          },
+          {
+            "char": "田",
+            "pinyin": "tián",
+            "desc": "田里种庄稼，绿油油的一片。"
+          },
+          {
+            "char": "火",
+            "pinyin": "huǒ",
+            "desc": "火红红的、热热的，能做饭也能取暖。"
+          }
+        ],
+        "task": "每个字读3遍，找一找生活中有没有这些字"
+      },
+      "math": {
+        "title": "认识零",
+        "questions": [
+          "盘子里有0个苹果，0代表什么？",
+          "1 - 1 = ？",
+          "比一比：0和1，哪个大？"
+        ],
+        "answers": [
+          "没有",
+          "0",
+          "1大"
+        ],
+        "guide": "宝宝，0就是没有的意思，什么都没有就是0。",
+        "task": "完成3道题，全对贴一颗星⭐"
+      },
+      "english": {
+        "words": [
+          {
+            "word": "car",
+            "meaning": "车",
+            "emoji": "🚗"
+          },
+          {
+            "word": "bus",
+            "meaning": "公交车",
+            "emoji": "🚌"
+          }
+        ],
+        "phrase": "Come here!（过来！）",
+        "guide": "宝宝跟读：car小汽车🚗，bus公交车🚌，叫妈妈过来Come here！",
+        "task": "每个单词读3遍，叫妈妈说Come here"
+      },
+      "thinking": {
+        "title": "找规律",
+        "content": "看看这些图形：⚪🔺⚪🔺⚪🔺 下一个是什么？",
+        "answer": "⚪圆形",
+        "guide": "引导宝宝观察规律，⚪和🔺交替出现。",
+        "task": "找出规律，说下一个是什么"
+      },
+      "science": {
+        "title": "蝴蝶是怎么变出来的？",
+        "content": "蝴蝶小时候是一条毛毛虫，吃很多叶子长大，然后做一个茧，在里面变变变，最后变成美丽的蝴蝶飞出来！",
+        "guide": "带宝宝看看蝴蝶的图片或视频，了解蜕变过程。",
+        "task": "说说蝴蝶小时候是什么"
+      },
+      "exercise": {
+        "title": "投掷游戏",
+        "items": [
+          "投沙包：投进筐里5次",
+          "扔纸飞机：飞3次",
+          "投篮：投3次"
+        ],
+        "guide": "准备一个筐，让宝宝瞄准投，锻炼手眼协调。",
+        "task": "完成3项投掷游戏，投中一个加一分"
+      }
+    },
+    "day9": {
+      "date": "第9天",
+      "poem": {
+        "title": "望庐山瀑布",
+        "author": "唐·李白",
+        "lines": [
+          "日照香炉生紫烟，",
+          "遥看瀑布挂前川。",
+          "飞流直下三千尺，",
+          "疑是银河落九天。"
+        ],
+        "guide": "宝宝，瀑布从高山上流下来，像天上的银河一样美。",
+        "task": "跟读2遍，感受瀑布的气势"
+      },
+      "characters": {
+        "items": [
+          {
+            "char": "木",
+            "pinyin": "mù",
+            "desc": "树木高高的，可以做桌子椅子。"
+          },
+          {
+            "char": "土",
+            "pinyin": "tǔ",
+            "desc": "泥土软软的，小花小草都长在土里。"
+          },
+          {
+            "char": "石",
+            "pinyin": "shí",
+            "desc": "石头硬硬的，可以搭房子修路。"
+          }
+        ],
+        "task": "每个字读3遍，找一找生活中有没有这些字"
+      },
+      "math": {
+        "title": "比多少",
+        "questions": [
+          "🍎🍎🍎 和 🍌🍌🍌🍌 谁多？",
+          "🐶🐶 和 🐱🐱🐱🐱 谁少？",
+          "🍭🍭🍭🍭🍭 和 🍬🍬🍬 谁多？"
+        ],
+        "answers": [
+          "香蕉多",
+          "小狗少",
+          "棒棒糖多"
+        ],
+        "guide": "宝宝一排一排数，比一比哪排多。",
+        "task": "完成3道题，全对贴一颗星⭐"
+      },
+      "english": {
+        "words": [
+          {
+            "word": "book",
+            "meaning": "书",
+            "emoji": "📚"
+          },
+          {
+            "word": "pen",
+            "meaning": "笔",
+            "emoji": "🖊️"
+          }
+        ],
+        "phrase": "Sit down.（坐下。）",
+        "guide": "宝宝跟读：book书📚，pen笔🖊️，妈妈说Sit down就坐下。",
+        "task": "每个单词读3遍，听到Sit down就坐下"
+      },
+      "thinking": {
+        "title": "影子配对",
+        "content": "哪个影子是小猫的？🐱🐶🐰（画出3个轮廓影子让宝宝配对）",
+        "answer": "和🐱轮廓一样的影子",
+        "guide": "带宝宝看阳光下的影子，找对应的物体。",
+        "task": "正确配对小猫和它的影子"
+      },
+      "science": {
+        "title": "为什么肚子会咕咕叫？",
+        "content": "肚子叫不是因为饿了，是因为肚子里的空气在动。当宝宝饿了，肚子就会发出咕咕的声音告诉你要吃饭啦。",
+        "guide": "宝宝肚子叫的时候，告诉他这是肚子在说话。",
+        "task": "肚子叫了就要吃饭，别饿着自己"
+      },
+      "exercise": {
+        "title": "爬行大赛",
+        "items": [
+          "手膝爬：爬10米",
+          "倒着爬：爬5米",
+          "障碍爬：绕枕头爬8米"
+        ],
+        "guide": "设置爬行路线，鼓励宝宝用不同方式爬。",
+        "task": "完成3种爬行，计时看看多快"
+      }
+    },
+    "day10": {
+      "date": "第10天",
+      "poem": {
+        "title": "游子吟",
+        "author": "唐·孟郊",
+        "lines": [
+          "慈母手中线，",
+          "游子身上衣。",
+          "临行密密缝，",
+          "意恐迟迟归。"
+        ],
+        "guide": "宝宝，妈妈很爱我们，就像诗中妈妈为孩子缝衣服。",
+        "task": "跟读2遍，抱抱妈妈说谢谢"
+      },
+      "characters": {
+        "items": [
+          {
+            "char": "口",
+            "pinyin": "kǒu",
+            "desc": "嘴巴也叫口，可以吃饭、说话、唱歌。"
+          },
+          {
+            "char": "目",
+            "pinyin": "mù",
+            "desc": "目就是眼睛，用眼睛看世界。"
+          },
+          {
+            "char": "耳",
+            "pinyin": "ěr",
+            "desc": "耳朵可以听声音，听音乐、听故事。"
+          }
+        ],
+        "task": "每个字读3遍，找一找生活中有没有这些字"
+      },
+      "math": {
+        "title": "简单的加法（10以内）",
+        "questions": [
+          "3 + 4 = ？",
+          "5 + 2 = ？",
+          "6 + 1 = ？"
+        ],
+        "answers": [
+          "7",
+          "7",
+          "7"
+        ],
+        "guide": "宝宝可以用手指头数，也可以画圈圈数。",
+        "task": "完成3道题，全对贴一颗星⭐"
+      },
+      "english": {
+        "words": [
+          {
+            "word": "big",
+            "meaning": "大的",
+            "emoji": "🐘"
+          },
+          {
+            "word": "small",
+            "meaning": "小的",
+            "emoji": "🐭"
+          }
+        ],
+        "phrase": "Stand up!（站起来！）",
+        "guide": "宝宝跟读：big大的🐘，small小的🐭，站起来Stand up！",
+        "task": "每个单词读3遍，听到Stand up就站起来"
+      },
+      "thinking": {
+        "title": "数独启蒙（3×3）",
+        "content": "在空格填上正确的水果：🍎|🍌|？ / 🍌|？|🍎 / ？|🍎|🍌",
+        "answer": "第一行：🍎，第二行：🍌，第三行：🍌",
+        "guide": "宝宝看每一行每一列，不能重复哦。",
+        "task": "完成数独启蒙，填好每个空格"
+      },
+      "science": {
+        "title": "为什么冰会融化？",
+        "content": "冰是水变的。天气热的时候冰会变成水，天气冷的时候水会变成冰。就像冰箱里的冰块拿出来就会化掉。",
+        "guide": "带宝宝做一个冰融化的小实验，观察变化。",
+        "task": "观察冰块融化，说说冰变成什么了"
+      },
+      "exercise": {
+        "title": "跳跃挑战",
+        "items": [
+          "立定跳远：跳3次",
+          "跳高摸球：摸10下",
+          "左右跳：跳20下"
+        ],
+        "guide": "在地板上画线，看宝宝能跳多远多高。",
+        "task": "完成3项跳跃挑战，记录最好成绩"
+      }
+    },
+    "day11": {
+      "date": "第11天",
+      "poem": {
+        "title": "江雪",
+        "author": "唐·柳宗元",
+        "lines": [
+          "千山鸟飞绝，",
+          "万径人踪灭。",
+          "孤舟蓑笠翁，",
+          "独钓寒江雪。"
+        ],
+        "guide": "宝宝，冬天下大雪了，老爷爷一个人钓鱼。",
+        "task": "跟读2遍，说说冬天的样子"
+      },
+      "characters": {
+        "items": [
+          {
+            "char": "人",
+            "pinyin": "rén",
+            "desc": "人就是我们，有爸爸妈妈、爷爷奶奶。"
+          },
+          {
+            "char": "子",
+            "pinyin": "zǐ",
+            "desc": "孩子就是小朋友，宝宝就是妈妈的好孩子。"
+          },
+          {
+            "char": "女",
+            "pinyin": "nǚ",
+            "desc": "女孩子、女生，妈妈就是女生。"
+          }
+        ],
+        "task": "每个字读3遍，找一找生活中有没有这些字"
+      },
+      "math": {
+        "title": "简单的减法（10以内）",
+        "questions": [
+          "7 - 3 = ？",
+          "8 - 4 = ？",
+          "9 - 5 = ？"
+        ],
+        "answers": [
+          "4",
+          "4",
+          "4"
+        ],
+        "guide": "宝宝从大的数倒着数，减几就倒数几。",
+        "task": "完成3道题，全对贴一颗星⭐"
+      },
+      "english": {
+        "words": [
+          {
+            "word": "one",
+            "meaning": "一",
+            "emoji": "1️⃣"
+          },
+          {
+            "word": "two",
+            "meaning": "二",
+            "emoji": "2️⃣"
+          }
+        ],
+        "phrase": "I am happy!（我开心！）",
+        "guide": "宝宝跟读：one一1️⃣，two二2️⃣，开心说I am happy！",
+        "task": "每个单词读3遍，开心时说I am happy"
+      },
+      "thinking": {
+        "title": "颜色分类",
+        "content": "把下面按颜色分类：🔴🟡🔴🟡🔵🔴（红色黄色蓝色各几个？）",
+        "answer": "红色3个，黄色2个，蓝色1个",
+        "guide": "宝宝一个一个看，同颜色的放在一起数。",
+        "task": "按颜色分类并数一数"
+      },
+      "science": {
+        "title": "为什么天空是蓝色的？",
+        "content": "太阳光有7种颜色，蓝色的光跑得最快，在天空中散开来，所以天看起来是蓝色的。",
+        "guide": "带宝宝看蓝天，问天空是什么颜色的？",
+        "task": "画一画蓝天白云"
+      },
+      "exercise": {
+        "title": "瑜伽小达人",
+        "items": [
+          "猫式：弯腰拱背5次",
+          "下犬式：坚持10秒",
+          "树式：单脚站10秒"
+        ],
+        "guide": "和宝宝一起做简单瑜伽，放松身体。",
+        "task": "完成3个瑜伽动作，深呼吸放松"
+      }
+    },
+    "day12": {
+      "date": "第12天",
+      "poem": {
+        "title": "村居",
+        "author": "清·高鼎",
+        "lines": [
+          "草长莺飞二月天，",
+          "拂堤杨柳醉春烟。",
+          "儿童散学归来早，",
+          "忙趁东风放纸鸢。"
+        ],
+        "guide": "宝宝，小朋友们放学后一起去放风筝，多开心！",
+        "task": "跟读2遍，说说风筝像什么"
+      },
+      "characters": {
+        "items": [
+          {
+            "char": "马",
+            "pinyin": "mǎ",
+            "desc": "马儿跑得快，哒哒哒。"
+          },
+          {
+            "char": "牛",
+            "pinyin": "niú",
+            "desc": "牛很勤劳，帮农民伯伯干活。"
+          },
+          {
+            "char": "羊",
+            "pinyin": "yáng",
+            "desc": "小羊白白的，咩咩叫。"
+          }
+        ],
+        "task": "每个字读3遍，找一找生活中有没有这些字"
+      },
+      "math": {
+        "title": "认识数字11-15",
+        "questions": [
+          "数一数：🌸×11，这是几？",
+          "数一数：⭐×13，这是几？",
+          "12和15，哪个大？"
+        ],
+        "answers": [
+          "11",
+          "13",
+          "15大"
+        ],
+        "guide": "宝宝数到10之后接着数：11、12、13……",
+        "task": "完成3道题，全对贴一颗星⭐"
+      },
+      "english": {
+        "words": [
+          {
+            "word": "three",
+            "meaning": "三",
+            "emoji": "3️⃣"
+          },
+          {
+            "word": "four",
+            "meaning": "四",
+            "emoji": "4️⃣"
+          }
+        ],
+        "phrase": "I'm hungry.（我饿了。）",
+        "guide": "宝宝跟读：three三3️⃣，four四4️⃣，饿了说I'm hungry。",
+        "task": "每个单词读3遍，饿了就说I'm hungry"
+      },
+      "thinking": {
+        "title": "拼图思维",
+        "content": "一个正方形可以分成几个三角形？（画一个正方形，画对角线）",
+        "answer": "2个三角形",
+        "guide": "用纸剪一个正方形，沿对角线剪开，让宝宝看。",
+        "task": "剪开正方形，看看变成什么了"
+      },
+      "science": {
+        "title": "为什么会有影子？",
+        "content": "光是直着走的，当光照到宝宝身上，宝宝的后面就会出现影子。就像站在太阳下，地上会有个黑黑的影子。",
+        "guide": "用手电筒照玩具，让宝宝看影子的变化。",
+        "task": "站在太阳下看看自己的影子"
+      },
+      "exercise": {
+        "title": "接力赛跑",
+        "items": [
+          "和爸爸比赛跑：3次",
+          "绕圈跑：10圈",
+          "倒着跑：3次"
+        ],
+        "guide": "在安全空地上进行，注意防摔倒。",
+        "task": "完成3项跑步，赢一次就奖励"
+      }
+    },
+    "day13": {
+      "date": "第13天",
+      "poem": {
+        "title": "小池",
+        "author": "宋·杨万里",
+        "lines": [
+          "泉眼无声惜细流，",
+          "树阴照水爱晴柔。",
+          "小荷才露尖尖角，",
+          "早有蜻蜓立上头。"
+        ],
+        "guide": "宝宝，夏天小池塘里荷花刚刚冒出来，蜻蜓就飞来了。",
+        "task": "跟读2遍，学画荷花"
+      },
+      "characters": {
+        "items": [
+          {
+            "char": "虫",
+            "pinyin": "chóng",
+            "desc": "小虫子爬呀爬，蝴蝶就是虫子变的。"
+          },
+          {
+            "char": "星",
+            "pinyin": "xīng",
+            "desc": "天上星星亮晶晶，一闪一闪的。"
+          },
+          {
+            "char": "红",
+            "pinyin": "hóng",
+            "desc": "红色很鲜艳，国旗是红色的，苹果也是红的。"
+          }
+        ],
+        "task": "每个字读3遍，找一找生活中有没有这些字"
+      },
+      "math": {
+        "title": "简单的加法（混合）",
+        "questions": [
+          "4 + 3 = ？",
+          "2 + 5 = ？",
+          "6 + 3 = ？"
+        ],
+        "answers": [
+          "7",
+          "7",
+          "9"
+        ],
+        "guide": "宝宝用手指算，一根一根加。",
+        "task": "完成3道题，全对贴一颗星⭐"
+      },
+      "english": {
+        "words": [
+          {
+            "word": "five",
+            "meaning": "五",
+            "emoji": "5️⃣"
+          },
+          {
+            "word": "six",
+            "meaning": "六",
+            "emoji": "6️⃣"
+          }
+        ],
+        "phrase": "Let's play!（一起玩吧！）",
+        "guide": "宝宝跟读：five五5️⃣，six六6️⃣，邀请玩Let's play！",
+        "task": "每个单词读3遍，找朋友玩说Let's play"
+      },
+      "thinking": {
+        "title": "比轻重",
+        "content": "哪个重？🍉西瓜和🍓草莓，哪个更重？",
+        "answer": "西瓜重，草莓轻",
+        "guide": "让宝宝用手掂一掂不同的东西，感受轻重。",
+        "task": "找出家里3样重的和3样轻的东西"
+      },
+      "science": {
+        "title": "蜜蜂为什么采花蜜？",
+        "content": "蜜蜂采花蜜是为了做蜂蜜。它们把花蜜带回蜂巢，做成甜甜的蜂蜜。蜜蜂还帮助花朵传粉，让花朵结出果实。",
+        "guide": "带宝宝观察花丛中的蜜蜂，但要注意安全。",
+        "task": "说说蜜蜂采花蜜做什么"
+      },
+      "exercise": {
+        "title": "绳梯训练",
+        "items": [
+          "高抬腿走：30步",
+          "侧向跨步：20步",
+          "单脚跳格子：15下"
+        ],
+        "guide": "用胶带在地上贴格子，带宝宝跳着玩。",
+        "task": "完成3项绳梯训练，动作要标准"
+      }
+    },
+    "day14": {
+      "date": "第14天",
+      "poem": {
+        "title": "咏柳",
+        "author": "唐·贺知章",
+        "lines": [
+          "碧玉妆成一树高，",
+          "万条垂下绿丝绦。",
+          "不知细叶谁裁出，",
+          "二月春风似剪刀。"
+        ],
+        "guide": "宝宝，柳树的叶子细细长长的，春风吹出来真好看。",
+        "task": "跟读2遍，找找柳树的图片"
+      },
+      "characters": {
+        "items": [
+          {
+            "char": "黄",
+            "pinyin": "huáng",
+            "desc": "黄色像太阳，香蕉也是黄色的。"
+          },
+          {
+            "char": "蓝",
+            "pinyin": "lán",
+            "desc": "蓝天真好看，大海也是蓝色的。"
+          },
+          {
+            "char": "绿",
+            "pinyin": "lǜ",
+            "desc": "绿色是小草的颜色，树叶也是绿的。"
+          }
+        ],
+        "task": "每个字读3遍，找一找生活中有没有这些字"
+      },
+      "math": {
+        "title": "简单的减法（混合）",
+        "questions": [
+          "6 - 2 = ？",
+          "9 - 3 = ？",
+          "8 - 5 = ？"
+        ],
+        "answers": [
+          "4",
+          "6",
+          "3"
+        ],
+        "guide": "宝宝倒着数，减2就倒数2个数。",
+        "task": "完成3道题，全对贴一颗星⭐"
+      },
+      "english": {
+        "words": [
+          {
+            "word": "seven",
+            "meaning": "七",
+            "emoji": "7️⃣"
+          },
+          {
+            "word": "eight",
+            "meaning": "八",
+            "emoji": "8️⃣"
+          }
+        ],
+        "phrase": "I'm sorry.（对不起。）",
+        "guide": "宝宝跟读：seven七7️⃣，eight八8️⃣，做错事说I'm sorry。",
+        "task": "每个单词读3遍，道歉时说I'm sorry"
+      },
+      "thinking": {
+        "title": "比高矮",
+        "content": "长颈鹿🦒和小狗🐶，谁更高？",
+        "answer": "长颈鹿更高",
+        "guide": "带宝宝比比家里谁最高，谁最矮。",
+        "task": "把家里的人从矮到高排队"
+      },
+      "science": {
+        "title": "为什么树叶会落下来？",
+        "content": "秋天来了，天气变冷，树妈妈为了保护自己，让树叶变黄落下来。这样树就能安全过冬啦。",
+        "guide": "秋天带宝宝捡落叶，观察不同形状的叶子。",
+        "task": "捡几片落叶，比比形状"
+      },
+      "exercise": {
+        "title": "气球游戏",
+        "items": [
+          "拍气球不掉地：坚持20秒",
+          "头顶气球走：走5米",
+          "踢气球：踢10下"
+        ],
+        "guide": "吹一个气球，玩各种花样，锻炼反应力。",
+        "task": "完成3项气球游戏，气球不能落地"
+      }
+    },
+    "day15": {
+      "date": "第15天",
+      "poem": {
+        "title": "草",
+        "author": "唐·白居易",
+        "lines": [
+          "离离原上草，",
+          "一岁一枯荣。",
+          "野火烧不尽，",
+          "春风吹又生。"
+        ],
+        "guide": "宝宝，小草的生命力真强，烧掉了还能长出来。",
+        "task": "跟读2遍，画一画小草"
+      },
+      "characters": {
+        "items": [
+          {
+            "char": "哭",
+            "pinyin": "kū",
+            "desc": "哭就是流眼泪，不开心的时候会哭。"
+          },
+          {
+            "char": "笑",
+            "pinyin": "xiào",
+            "desc": "笑就是开心，宝宝笑起来真可爱。"
+          },
+          {
+            "char": "走",
+            "pinyin": "zǒu",
+            "desc": "走就是一步一步移动，宝宝会走路了。"
+          }
+        ],
+        "task": "每个字读3遍，找一找生活中有没有这些字"
+      },
+      "math": {
+        "title": "认识数字16-20",
+        "questions": [
+          "数一数：🌸×17，这是几？",
+          "数一数：⭐×19，这是几？",
+          "20和16，哪个大？"
+        ],
+        "answers": [
+          "17",
+          "19",
+          "20大"
+        ],
+        "guide": "宝宝数到20啦，真厉害！继续加油！",
+        "task": "完成3道题，全对贴一颗星⭐"
+      },
+      "english": {
+        "words": [
+          {
+            "word": "nine",
+            "meaning": "九",
+            "emoji": "9️⃣"
+          },
+          {
+            "word": "ten",
+            "meaning": "十",
+            "emoji": "🔟"
+          }
+        ],
+        "phrase": "You are welcome!（不客气！）",
+        "guide": "宝宝跟读：nine九9️⃣，ten十🔟，别人说谢谢回答You are welcome！",
+        "task": "每个单词读3遍，有人谢你答You are welcome"
+      },
+      "thinking": {
+        "title": "连一连",
+        "content": "把相关的东西连起来：👣脚-👟鞋子，🖐️手-🧤手套，👂耳朵-🎧耳机",
+        "answer": "脚和鞋子、手和手套、耳朵和耳机",
+        "guide": "引导宝宝理解事物之间的配对关系。",
+        "task": "完成配对，说说为什么这样连"
+      },
+      "science": {
+        "title": "为什么有的动物要冬眠？",
+        "content": "冬天太冷了，也没有食物吃。熊、蛇、青蛙这些动物就睡一个大觉，睡一整个冬天，春天再醒来。",
+        "guide": "问问宝宝：如果你冬眠，想做什么梦？",
+        "task": "说说哪些动物要冬眠"
+      },
+      "exercise": {
+        "title": "拔河比赛",
+        "items": [
+          "和妈妈拔河：3次",
+          "单手拔河：2次",
+          "背后拔河：2次"
+        ],
+        "guide": "用毛巾代替绳子，安全又有趣。",
+        "task": "完成3项拔河，用力但别摔倒"
+      }
+    },
+    "day16": {
+      "date": "第16天",
+      "poem": {
+        "title": "相思",
+        "author": "唐·王维",
+        "lines": [
+          "红豆生南国，",
+          "春来发几枝。",
+          "愿君多采撷，",
+          "此物最相思。"
+        ],
+        "guide": "宝宝，红豆代表想念，你想念谁呀？",
+        "task": "跟读2遍，说说你最想念谁"
+      },
+      "characters": {
+        "items": [
+          {
+            "char": "跑",
+            "pinyin": "pǎo",
+            "desc": "跑比走快，宝宝跑来跑去真好玩。"
+          },
+          {
+            "char": "跳",
+            "pinyin": "tiào",
+            "desc": "跳就是蹦起来，宝宝能跳很高。"
+          },
+          {
+            "char": "飞",
+            "pinyin": "fēi",
+            "desc": "小鸟在天上飞，飞机也在天上飞。"
+          }
+        ],
+        "task": "每个字读3遍，找一找生活中有没有这些字"
+      },
+      "math": {
+        "title": "按顺序数数",
+        "questions": [
+          "从1数到10",
+          "从10数到20",
+          "3后面是几？7后面是几？"
+        ],
+        "answers": [
+          "1-10",
+          "10-20",
+          "4和8"
+        ],
+        "guide": "宝宝大声数出来，一个接一个，别跳哦。",
+        "task": "完成3道题，全对贴一颗星⭐"
+      },
+      "english": {
+        "words": [
+          {
+            "word": "mom",
+            "meaning": "妈妈",
+            "emoji": "👩"
+          },
+          {
+            "word": "dad",
+            "meaning": "爸爸",
+            "emoji": "👨"
+          }
+        ],
+        "phrase": "I miss you!（我想你！）",
+        "guide": "宝宝跟读：mom妈妈👩，dad爸爸👨，想念时说I miss you！",
+        "task": "每个单词读3遍，想爸爸妈妈时说I miss you"
+      },
+      "thinking": {
+        "title": "找不同（升级）",
+        "content": "两个几乎一样的图：一只猫🐱，一只有蝴蝶结，一只没有，哪里不同？",
+        "answer": "一只有蝴蝶结，一只没有",
+        "guide": "带宝宝仔细观察细节，培养观察力。",
+        "task": "找出不同，说得越细越好"
+      },
+      "science": {
+        "title": "水从哪里来？",
+        "content": "水从河流、湖泊、海洋来，太阳晒热了水，水变成水蒸气飞到天上，变成云，云再变成雨落下来。水就这样一直旅行。",
+        "guide": "带宝宝看看河流或水龙头，讲讲水的旅行。",
+        "task": "说说水可以用来做什么"
+      },
+      "exercise": {
+        "title": "保龄球",
+        "items": [
+          "滚球撞瓶子：撞倒3个",
+          "远距离滚球：从3米外",
+          "左手滚球：试2次"
+        ],
+        "guide": "用矿泉水瓶做球瓶，球用软球。",
+        "task": "完成3项保龄球，撞倒越多越好"
+      }
+    },
+    "day17": {
+      "date": "第17天",
+      "poem": {
+        "title": "回乡偶书",
+        "author": "唐·贺知章",
+        "lines": [
+          "少小离家老大回，",
+          "乡音无改鬓毛衰。",
+          "儿童相见不相识，",
+          "笑问客从何处来。"
+        ],
+        "guide": "宝宝，老爷爷回到家乡，小孩子不认识他了。",
+        "task": "跟读2遍，说说家乡有什么好"
+      },
+      "characters": {
+        "items": [
+          {
+            "char": "门",
+            "pinyin": "mén",
+            "desc": "门是进出的地方，推开门就到家了。"
+          },
+          {
+            "char": "车",
+            "pinyin": "chē",
+            "desc": "车有四个轮子，可以带我们去很远的地方。"
+          },
+          {
+            "char": "书",
+            "pinyin": "shū",
+            "desc": "书里面有很多知识，宝宝爱看书。"
+          }
+        ],
+        "task": "每个字读3遍，找一找生活中有没有这些字"
+      },
+      "math": {
+        "title": "加法（凑十）",
+        "questions": [
+          "5 + 5 = ？",
+          "3 + 7 = ？",
+          "6 + 4 = ？"
+        ],
+        "answers": [
+          "10",
+          "10",
+          "10"
+        ],
+        "guide": "宝宝发现了吗？5+5=10，3+7=10，加起来是10。",
+        "task": "完成3道题，全对贴一颗星⭐"
+      },
+      "english": {
+        "words": [
+          {
+            "word": "house",
+            "meaning": "房子",
+            "emoji": "🏠"
+          },
+          {
+            "word": "door",
+            "meaning": "门",
+            "emoji": "🚪"
+          }
+        ],
+        "phrase": "Open the door!（开门！）",
+        "guide": "宝宝跟读：house房子🏠，door门🚪，开门说Open the door！",
+        "task": "每个单词读3遍，开门时说Open the door"
+      },
+      "thinking": {
+        "title": "逻辑排序",
+        "content": "宝宝早上起床：穿衣服→刷牙→吃饭，这个顺序对吗？",
+        "answer": "对，这是早上起床的顺序",
+        "guide": "引导宝宝说出一件事的先后顺序。",
+        "task": "说说你早上起床做了什么，按顺序说"
+      },
+      "science": {
+        "title": "为什么猫的眼睛会发光？",
+        "content": "猫的眼睛后面有一层反光的膜，像一面小镜子，能把光线反射回来。所以晚上猫的眼睛会发光，帮助它在黑暗中看清楚。",
+        "guide": "晚上用手电筒照猫（或图片），观察眼睛变化。",
+        "task": "说说猫晚上能看清东西吗"
+      },
+      "exercise": {
+        "title": "呼啦圈游戏",
+        "items": [
+          "钻圈：钻过3个圈",
+          "跳圈：跳进跳出10次",
+          "转圈：转5下"
+        ],
+        "guide": "用呼啦圈玩各种游戏，锻炼灵活性。",
+        "task": "完成3项呼啦圈游戏"
+      }
+    },
+    "day18": {
+      "date": "第18天",
+      "poem": {
+        "title": "赠汪伦",
+        "author": "唐·李白",
+        "lines": [
+          "李白乘舟将欲行，",
+          "忽闻岸上踏歌声。",
+          "桃花潭水深千尺，",
+          "不及汪伦送我情。"
+        ],
+        "guide": "宝宝，好朋友送别时依依不舍，友情比水还深。",
+        "task": "跟读2遍，说说你的好朋友"
+      },
+      "characters": {
+        "items": [
+          {
+            "char": "手",
+            "pinyin": "shǒu",
+            "desc": "手可以做很多事情，画画、吃饭、拿东西。"
+          },
+          {
+            "char": "足",
+            "pinyin": "zú",
+            "desc": "足就是脚，用脚走路、跑步、踢球。"
+          },
+          {
+            "char": "心",
+            "pinyin": "xīn",
+            "desc": "心在心里面，爱心就是喜欢和关心。"
+          }
+        ],
+        "task": "每个字读3遍，找一找生活中有没有这些字"
+      },
+      "math": {
+        "title": "减法（10以内）",
+        "questions": [
+          "10 - 3 = ？",
+          "10 - 6 = ？",
+          "10 - 1 = ？"
+        ],
+        "answers": [
+          "7",
+          "4",
+          "9"
+        ],
+        "guide": "宝宝从10开始倒着数。",
+        "task": "完成3道题，全对贴一颗星⭐"
+      },
+      "english": {
+        "words": [
+          {
+            "word": "happy",
+            "meaning": "开心的",
+            "emoji": "😊"
+          },
+          {
+            "word": "sad",
+            "meaning": "难过的",
+            "emoji": "😢"
+          }
+        ],
+        "phrase": "Are you OK?（你还好吗？）",
+        "guide": "宝宝跟读：happy开心😊，sad难过😢，关心人问Are you OK？",
+        "task": "每个单词读3遍，关心别人问Are you OK"
+      },
+      "thinking": {
+        "title": "猜谜语（动物）",
+        "content": "长长的鼻子，大大的耳朵，走起路来咚咚咚。（打一动物）",
+        "answer": "大象🐘",
+        "guide": "宝宝想想哪些动物有长鼻子大耳朵？",
+        "task": "猜出谜语，模仿大象走路"
+      },
+      "science": {
+        "title": "为什么天会打雷？",
+        "content": "打雷是因为云朵撞在一起产生的巨大声音。闪电和雷是同时发生的，但是光跑得比声音快，所以我们先看到闪电，后听到雷声。",
+        "guide": "打雷时安抚宝宝，同时讲解科学知识。",
+        "task": "说说打雷时应该怎么做"
+      },
+      "exercise": {
+        "title": "攀爬运动",
+        "items": [
+          "爬沙发：爬上去爬下来5次",
+          "爬楼梯：上下10级",
+          "攀爬架：玩5分钟"
+        ],
+        "guide": "在安全的地方让宝宝攀爬，家长在旁边保护。",
+        "task": "完成3项攀爬，注意安全第一"
+      }
+    },
+    "day19": {
+      "date": "第19天",
+      "poem": {
+        "title": "夜宿山寺",
+        "author": "唐·李白",
+        "lines": [
+          "危楼高百尺，",
+          "手可摘星辰。",
+          "不敢高声语，",
+          "恐惊天上人。"
+        ],
+        "guide": "宝宝，住在高高的山上，感觉可以摘到星星啦！",
+        "task": "跟读2遍，数数夜空有多少星星"
+      },
+      "characters": {
+        "items": [
+          {
+            "char": "竹",
+            "pinyin": "zhú",
+            "desc": "竹子一节一节的，熊猫爱吃竹子。"
+          },
+          {
+            "char": "禾",
+            "pinyin": "hé",
+            "desc": "禾苗就是小稻子，长大变成大米。"
+          },
+          {
+            "char": "米",
+            "pinyin": "mǐ",
+            "desc": "米是白白的，煮成饭香喷喷。"
+          }
+        ],
+        "task": "每个字读3遍，找一找生活中有没有这些字"
+      },
+      "math": {
+        "title": "比大小",
+        "questions": [
+          "15和13，哪个大？",
+          "18和20，哪个大？",
+          "11和9，哪个大？"
+        ],
+        "answers": [
+          "15大",
+          "20大",
+          "11大"
+        ],
+        "guide": "宝宝数一数，大的数字在后面的位置。",
+        "task": "完成3道题，全对贴一颗星⭐"
+      },
+      "english": {
+        "words": [
+          {
+            "word": "eat",
+            "meaning": "吃",
+            "emoji": "🍽️"
+          },
+          {
+            "word": "drink",
+            "meaning": "喝",
+            "emoji": "🥤"
+          }
+        ],
+        "phrase": "Time to eat!（吃饭啦！）",
+        "guide": "宝宝跟读：eat吃🍽️，drink喝🥤，吃饭说Time to eat！",
+        "task": "每个单词读3遍，吃饭时说Time to eat"
+      },
+      "thinking": {
+        "title": "图形组合",
+        "content": "用🔺两个三角形可以拼成什么？（正方形、长方形？）",
+        "answer": "可以拼成正方形、平行四边形",
+        "guide": "用积木或纸片演示给宝看。",
+        "task": "用两个三角形拼出不同形状"
+      },
+      "science": {
+        "title": "种子怎么发芽？",
+        "content": "种子种在土里，浇水晒太阳，它就会发芽。先长出根往下钻，再长出芽往上冒，慢慢就变成一棵小植物。",
+        "guide": "带宝宝种一颗豆子，每天观察生长。",
+        "task": "种一颗豆子，每天浇水观察"
+      },
+      "exercise": {
+        "title": "游泳动作（陆地）",
+        "items": [
+          "自由泳划臂：做20次",
+          "蛙泳蹬腿：做20次",
+          "憋气练习：憋5秒（3次）"
+        ],
+        "guide": "在垫子上模仿游泳动作，锻炼协调性。",
+        "task": "完成3项游泳动作模仿"
+      }
+    },
+    "day20": {
+      "date": "第20天",
+      "poem": {
+        "title": "鸟鸣涧",
+        "author": "唐·王维",
+        "lines": [
+          "人闲桂花落，",
+          "夜静春山空。",
+          "月出惊山鸟，",
+          "时鸣春涧中。"
+        ],
+        "guide": "宝宝，春天山里安静，月亮出来小鸟都醒了。",
+        "task": "跟读2遍，学小鸟叫两声"
+      },
+      "characters": {
+        "items": [
+          {
+            "char": "瓜",
+            "pinyin": "guā",
+            "desc": "西瓜圆圆的，夏天吃了解渴。"
+          },
+          {
+            "char": "果",
+            "pinyin": "guǒ",
+            "desc": "水果很好吃，苹果、香蕉都是水果。"
+          },
+          {
+            "char": "豆",
+            "pinyin": "dòu",
+            "desc": "豆子小小的，有红豆、绿豆、黄豆。"
+          }
+        ],
+        "task": "每个字读3遍，找一找生活中有没有这些字"
+      },
+      "math": {
+        "title": "加法练习",
+        "questions": [
+          "2 + 8 = ？",
+          "4 + 6 = ？",
+          "7 + 3 = ？"
+        ],
+        "answers": [
+          "10",
+          "10",
+          "10"
+        ],
+        "guide": "宝宝又凑出了10！10是好朋友数。",
+        "task": "完成3道题，全对贴一颗星⭐"
+      },
+      "english": {
+        "words": [
+          {
+            "word": "hello",
+            "meaning": "你好",
+            "emoji": "👋"
+          },
+          {
+            "word": "goodbye",
+            "meaning": "再见",
+            "emoji": "👋"
+          }
+        ],
+        "phrase": "See you later!（回头见！）",
+        "guide": "宝宝跟读：hello你好👋，goodbye再见👋，告别说See you later！",
+        "task": "每个单词读3遍，告别时说See you later"
+      },
+      "thinking": {
+        "title": "数量对应",
+        "content": "看数字找对应的水果：3→🍎🍎🍎，5→🍌🍌🍌🍌🍌，4→？",
+        "answer": "⭐⭐⭐⭐（4个）",
+        "guide": "宝宝数一数数字，画对应的数量。",
+        "task": "按数字画对应数量的东西"
+      },
+      "science": {
+        "title": "为什么气球会飞？",
+        "content": "气球里面是氢气或氦气，比空气轻很多，所以气球会飘到天上去。就像木头放在水里会浮起来一样。",
+        "guide": "给宝宝演示气球飞起来，讲解轻的东西往上飘。",
+        "task": "看看气球飞到哪里去了"
+      },
+      "exercise": {
+        "title": "平衡车/滑板",
+        "items": [
+          "直线骑行：骑10米",
+          "绕障碍物：绕5个",
+          "刹车练习：刹停5次"
+        ],
+        "guide": "在安全场地练习，带好护具。",
+        "task": "完成3项平衡车练习"
+      }
+    },
+    "day21": {
+      "date": "第21天",
+      "poem": {
+        "title": "九月九日忆山东兄弟",
+        "author": "唐·王维",
+        "lines": [
+          "独在异乡为异客，",
+          "每逢佳节倍思亲。",
+          "遥知兄弟登高处，",
+          "遍插茱萸少一人。"
+        ],
+        "guide": "宝宝，节日里诗人想念家里的亲人了。",
+        "task": "跟读2遍，说说你家里有谁"
+      },
+      "characters": {
+        "items": [
+          {
+            "char": "光",
+            "pinyin": "guāng",
+            "desc": "光很亮，太阳光照在身上暖暖的。"
+          },
+          {
+            "char": "阳",
+            "pinyin": "yáng",
+            "desc": "太阳高高挂在天上，给我们光和热。"
+          },
+          {
+            "char": "雨",
+            "pinyin": "yǔ",
+            "desc": "雨从天上落下来，滋润大地。"
+          }
+        ],
+        "task": "每个字读3遍，找一找生活中有没有这些字"
+      },
+      "math": {
+        "title": "减法练习",
+        "questions": [
+          "7 - 4 = ？",
+          "9 - 6 = ？",
+          "8 - 2 = ？"
+        ],
+        "answers": [
+          "3",
+          "3",
+          "6"
+        ],
+        "guide": "宝宝用手指或画圈，慢慢算。",
+        "task": "完成3道题，全对贴一颗星⭐"
+      },
+      "english": {
+        "words": [
+          {
+            "word": "yes",
+            "meaning": "是",
+            "emoji": "✅"
+          },
+          {
+            "word": "no",
+            "meaning": "不",
+            "emoji": "❌"
+          }
+        ],
+        "phrase": "Yes, please!（好的，请！）",
+        "guide": "宝宝跟读：yes是✅，no不❌，同意说Yes, please！",
+        "task": "每个单词读3遍，同意时点头说Yes"
+      },
+      "thinking": {
+        "title": "迷宫升级",
+        "content": "小老鼠🐭要从迷宫里找到奶酪🧀，先向上、再向右、再向下走。",
+        "answer": "按指令走出迷宫",
+        "guide": "宝宝用手指跟着指令走，锻炼方向感。",
+        "task": "按指令帮小老鼠找到奶酪"
+      },
+      "science": {
+        "title": "为什么不能摸电源？",
+        "content": "电很危险，摸到电源会被电到，会受伤。电虽然看不见，但它非常厉害，能让人受伤，所以千万不能碰插座和电线。",
+        "guide": "安全教育很重要，要严肃但不要吓到宝宝。",
+        "task": "记住：不能碰插座和电线"
+      },
+      "exercise": {
+        "title": "绳子游戏",
+        "items": [
+          "跳绳：跳10下",
+          "跨绳：跨过绳子10次",
+          "绕绳走：沿着绳子走5米"
+        ],
+        "guide": "准备一根跳绳，玩各种花样。",
+        "task": "完成3项绳子游戏"
+      }
+    },
+    "day22": {
+      "date": "第22天",
+      "poem": {
+        "title": "鹿柴",
+        "author": "唐·王维",
+        "lines": [
+          "空山不见人，",
+          "但闻人语响。",
+          "返景入深林，",
+          "复照青苔上。"
+        ],
+        "guide": "宝宝，山里面看不到人，但能听到声音，真神奇！",
+        "task": "跟读2遍，玩玩回声游戏"
+      },
+      "characters": {
+        "items": [
+          {
+            "char": "开",
+            "pinyin": "kāi",
+            "desc": "开门、开花，开就是打开的意思。"
+          },
+          {
+            "char": "关",
+            "pinyin": "guān",
+            "desc": "关门、关灯，关就是合上的意思。"
+          },
+          {
+            "char": "出",
+            "pinyin": "chū",
+            "desc": "出门、出去，出就是从里面到外面。"
+          }
+        ],
+        "task": "每个字读3遍，找一找生活中有没有这些字"
+      },
+      "math": {
+        "title": "看图数数",
+        "questions": [
+          "🍎🍎🍎🍎🍎 + 🍎🍎🍎 = ？",
+          "🐶🐶🐶🐶 - 🐶🐶 = ？",
+          "⭐⭐⭐ + ⭐⭐ = ？"
+        ],
+        "answers": [
+          "8个",
+          "2只",
+          "5颗"
+        ],
+        "guide": "宝宝先数第一组，再数第二组，加起来。",
+        "task": "完成3道题，全对贴一颗星⭐"
+      },
+      "english": {
+        "words": [
+          {
+            "word": "run",
+            "meaning": "跑",
+            "emoji": "🏃"
+          },
+          {
+            "word": "jump",
+            "meaning": "跳",
+            "emoji": "🦘"
+          }
+        ],
+        "phrase": "Run and jump!（跑和跳！）",
+        "guide": "宝宝跟读：run跑🏃，jump跳🦘，一起Run and jump！",
+        "task": "每个单词读3遍，边说Run边跑，Jump边跳"
+      },
+      "thinking": {
+        "title": "猜谜语（水果）",
+        "content": "黄黄的，弯弯的，剥开皮，白白的。（打一水果）",
+        "answer": "香蕉🍌",
+        "guide": "宝宝想想，什么水果黄黄的弯弯的？",
+        "task": "猜出谜语，吃一根香蕉"
+      },
+      "science": {
+        "title": "为什么人会打喷嚏？",
+        "content": "鼻子里进了灰尘或小虫子，鼻子痒痒的，就打喷嚏把它们赶出去。打喷嚏是身体保护自己的方式。",
+        "guide": "教宝宝打喷嚏时用手肘挡住，讲卫生。",
+        "task": "打喷嚏时记得用手肘挡住"
+      },
+      "exercise": {
+        "title": "体能循环",
+        "items": [
+          "熊爬5米 + 兔子跳5下",
+          "蛙跳5下 + 螃蟹走5米",
+          "鸭子走5米 + 原地跑10秒"
+        ],
+        "guide": "把几个动作连起来做，锻炼体能。",
+        "task": "完成2组体能循环，中间休息"
+      }
+    },
+    "day23": {
+      "date": "第23天",
+      "poem": {
+        "title": "池上",
+        "author": "唐·白居易",
+        "lines": [
+          "小娃撑小艇，",
+          "偷采白莲回。",
+          "不解藏踪迹，",
+          "浮萍一道开。"
+        ],
+        "guide": "宝宝，小朋友偷偷划船采莲花，太可爱了。",
+        "task": "跟读2遍，说说你在水里玩过什么"
+      },
+      "characters": {
+        "items": [
+          {
+            "char": "入",
+            "pinyin": "rù",
+            "desc": "入就是进来，从外面到里面。"
+          },
+          {
+            "char": "来",
+            "pinyin": "lái",
+            "desc": "来来来，快过来，来就是靠近。"
+          },
+          {
+            "char": "去",
+            "pinyin": "qù",
+            "desc": "去去去，走出去，去就是离开。"
+          }
+        ],
+        "task": "每个字读3遍，找一找生活中有没有这些字"
+      },
+      "math": {
+        "title": "加法故事题",
+        "questions": [
+          "小明有3个气球，妈妈又给了2个，一共几个？",
+          "树上有4只鸟，又飞来3只，一共几只？",
+          "桌上有5本书，又放了4本，一共几本？"
+        ],
+        "answers": [
+          "5个",
+          "7只",
+          "9本"
+        ],
+        "guide": "宝宝想象一下场景，用加法算。",
+        "task": "完成3道题，全对贴一颗星⭐"
+      },
+      "english": {
+        "words": [
+          {
+            "word": "hand",
+            "meaning": "手",
+            "emoji": "✋"
+          },
+          {
+            "word": "foot",
+            "meaning": "脚",
+            "emoji": "🦶"
+          }
+        ],
+        "phrase": "Clap your hands!（拍拍手！）",
+        "guide": "宝宝跟读：hand手✋，foot脚🦶，拍手Clap your hands！",
+        "task": "每个单词读3遍，拍拍手说Clap your hands"
+      },
+      "thinking": {
+        "title": "配对记忆",
+        "content": "翻牌游戏：🍎🍌🐱🐶（看5秒，翻过去，找出🍎在哪里？）",
+        "answer": "记住位置找出来",
+        "guide": "用卡片玩翻牌记忆游戏，从2对开始。",
+        "task": "记住位置，翻出正确的那张"
+      },
+      "science": {
+        "title": "太阳有多大？",
+        "content": "太阳非常大非常大，比地球大100万倍！但因为离我们太远了，看起来只有盘子那么大。太阳是一颗大火球，给我们光和热。",
+        "guide": "用篮球和黄豆做对比，演示太阳和地球的大小。",
+        "task": "说说太阳给你什么感觉"
+      },
+      "exercise": {
+        "title": "弹跳游戏",
+        "items": [
+          "蹦床跳：跳20下",
+          "弹簧跳：跳15下",
+          "抱膝跳：跳5下"
+        ],
+        "guide": "注意安全，旁边要有人保护。",
+        "task": "完成3项弹跳游戏"
+      }
+    },
+    "day24": {
+      "date": "第24天",
+      "poem": {
+        "title": "风",
+        "author": "唐·李峤",
+        "lines": [
+          "解落三秋叶，",
+          "能开二月花。",
+          "过江千尺浪，",
+          "入竹万竿斜。"
+        ],
+        "guide": "宝宝，风可以把树叶吹落，也能把花儿吹开。",
+        "task": "跟读2遍，吹一口气感受风"
+      },
+      "characters": {
+        "items": [
+          {
+            "char": "左",
+            "pinyin": "zuǒ",
+            "desc": "左手在左边，举手看看你的左手。"
+          },
+          {
+            "char": "右",
+            "pinyin": "yòu",
+            "desc": "右手在右边，举手看看你的右手。"
+          },
+          {
+            "char": "中",
+            "pinyin": "zhōng",
+            "desc": "中间在左右之间，宝宝站中间。"
+          }
+        ],
+        "task": "每个字读3遍，找一找生活中有没有这些字"
+      },
+      "math": {
+        "title": "减法故事题",
+        "questions": [
+          "有6颗糖，吃了2颗，还剩几颗？",
+          "有8只小鸟，飞走了3只，还剩几只？",
+          "有10朵花，摘了4朵，还剩几朵？"
+        ],
+        "answers": [
+          "4颗",
+          "5只",
+          "6朵"
+        ],
+        "guide": "宝宝想想，减少了就要用减法。",
+        "task": "完成3道题，全对贴一颗星⭐"
+      },
+      "english": {
+        "words": [
+          {
+            "word": "eye",
+            "meaning": "眼睛",
+            "emoji": "👁️"
+          },
+          {
+            "word": "nose",
+            "meaning": "鼻子",
+            "emoji": "👃"
+          }
+        ],
+        "phrase": "Touch your nose!（摸摸鼻子！）",
+        "guide": "宝宝跟读：eye眼睛👁️，nose鼻子👃，摸鼻子Touch your nose！",
+        "task": "每个单词读3遍，摸摸鼻子说Touch your nose"
+      },
+      "thinking": {
+        "title": "序列补全",
+        "content": "1、2、？、4、5（问号是几？）",
+        "answer": "3",
+        "guide": "宝宝数一数，看缺了哪个数字。",
+        "task": "补全序列，说出缺了哪个"
+      },
+      "science": {
+        "title": "为什么肥皂能吹泡泡？",
+        "content": "肥皂水能拉成薄薄的膜，像气球皮一样。往里吹气，薄膜就鼓起来变成泡泡啦。泡泡是圆的是因为表面张力把它拉圆了。",
+        "guide": "带宝宝吹泡泡，享受亲子时光。",
+        "task": "吹泡泡，数数能吹多少个"
+      },
+      "exercise": {
+        "title": "反应游戏",
+        "items": [
+          "听口令做动作：玩2分钟",
+          "红绿灯：玩3分钟",
+          "抓尾巴：玩3分钟"
+        ],
+        "guide": "妈妈说口令宝宝做，锻炼反应能力。",
+        "task": "完成3项反应游戏，反应越来越快"
+      }
+    },
+    "day25": {
+      "date": "第25天",
+      "poem": {
+        "title": "元日",
+        "author": "宋·王安石",
+        "lines": [
+          "爆竹声中一岁除，",
+          "春风送暖入屠苏。",
+          "千门万户曈曈日，",
+          "总把新桃换旧符。"
+        ],
+        "guide": "宝宝，过年了放鞭炮，新的一年开始了！",
+        "task": "跟读2遍，说说过年吃什么"
+      },
+      "characters": {
+        "items": [
+          {
+            "char": "父",
+            "pinyin": "fù",
+            "desc": "父亲就是爸爸，爸爸爱宝宝。"
+          },
+          {
+            "char": "母",
+            "pinyin": "mǔ",
+            "desc": "母亲就是妈妈，妈妈最疼宝宝。"
+          },
+          {
+            "char": "儿",
+            "pinyin": "ér",
+            "desc": "儿子、儿童，宝宝就是小朋友。"
+          }
+        ],
+        "task": "每个字读3遍，找一找生活中有没有这些字"
+      },
+      "math": {
+        "title": "加法凑整",
+        "questions": [
+          "1 + 9 = ？",
+          "2 + 8 = ？",
+          "3 + 7 = ？"
+        ],
+        "answers": [
+          "10",
+          "10",
+          "10"
+        ],
+        "guide": "宝宝找规律：1和9是好朋友，凑成10。",
+        "task": "完成3道题，全对贴一颗星⭐"
+      },
+      "english": {
+        "words": [
+          {
+            "word": "ear",
+            "meaning": "耳朵",
+            "emoji": "👂"
+          },
+          {
+            "word": "mouth",
+            "meaning": "嘴巴",
+            "emoji": "👄"
+          }
+        ],
+        "phrase": "Open your mouth!（张开嘴巴！）",
+        "guide": "宝宝跟读：ear耳朵👂，mouth嘴巴👄，张嘴Open your mouth！",
+        "task": "每个单词读3遍，张嘴说Open your mouth"
+      },
+      "thinking": {
+        "title": "方向认知",
+        "content": "宝宝的前面是什么？后面是什么？左边是什么？右边是什么？",
+        "answer": "说出前后左右各有什么",
+        "guide": "带宝宝认识方向，结合身体来学习。",
+        "task": "说出前后左右各有什么东西"
+      },
+      "science": {
+        "title": "为什么牙齿要每天刷？",
+        "content": "吃完东西后，牙缝里会留下食物渣渣。细菌喜欢吃这些渣渣，然后产生酸腐蚀牙齿。刷牙就是把细菌和渣渣赶走。",
+        "guide": "早晚带宝宝一起刷牙，养成好习惯。",
+        "task": "每天早晚刷牙，保护牙齿"
+      },
+      "exercise": {
+        "title": "拉伸放松",
+        "items": [
+          "摸脚尖：保持10秒",
+          "蝴蝶拉伸：保持15秒",
+          "全身伸展：像星星一样"
+        ],
+        "guide": "运动后拉伸很重要，动作要轻柔。",
+        "task": "完成3项拉伸，放松身体"
+      }
+    },
+    "day26": {
+      "date": "第26天",
+      "poem": {
+        "title": "梅花",
+        "author": "宋·王安石",
+        "lines": [
+          "墙角数枝梅，",
+          "凌寒独自开。",
+          "遥知不是雪，",
+          "为有暗香来。"
+        ],
+        "guide": "宝宝，冬天梅花开了，白白的像雪，还有香味。",
+        "task": "跟读2遍，闻一闻花的香味"
+      },
+      "characters": {
+        "items": [
+          {
+            "char": "老",
+            "pinyin": "lǎo",
+            "desc": "老爷爷、老奶奶年纪大了，我们要尊敬他们。"
+          },
+          {
+            "char": "少",
+            "pinyin": "shào",
+            "desc": "少年就是小朋友，宝宝现在就是少年。"
+          },
+          {
+            "char": "友",
+            "pinyin": "yǒu",
+            "desc": "朋友就是一起玩的人，好朋友一起玩最开心。"
+          }
+        ],
+        "task": "每个字读3遍，找一找生活中有没有这些字"
+      },
+      "math": {
+        "title": "认识数位",
+        "questions": [
+          "10里面有1个十和几个一？",
+          "15里面有1个十和几个一？",
+          "12里面有1个十和几个一？"
+        ],
+        "answers": [
+          "0个一",
+          "5个一",
+          "2个一"
+        ],
+        "guide": "宝宝，十几的数字都有1个十和几个一。",
+        "task": "完成3道题，全对贴一颗星⭐"
+      },
+      "english": {
+        "words": [
+          {
+            "word": "up",
+            "meaning": "上",
+            "emoji": "⬆️"
+          },
+          {
+            "word": "down",
+            "meaning": "下",
+            "emoji": "⬇️"
+          }
+        ],
+        "phrase": "Up and down!（上上下下！）",
+        "guide": "宝宝跟读：up上⬆️，down下⬇️，上下Up and down！",
+        "task": "每个单词读3遍，做上下动作说Up and down"
+      },
+      "thinking": {
+        "title": "逻辑推理",
+        "content": "小猫比小狗小，小狗比大象小，谁最大？谁最小？",
+        "answer": "大象最大，小猫最小",
+        "guide": "帮宝宝理清比较关系，一步一步推。",
+        "task": "推理出谁最大谁最小"
+      },
+      "science": {
+        "title": "为什么蜗牛有壳？",
+        "content": "蜗牛的壳是它的家，走到哪里就背到哪里。遇到危险就缩进壳里，保护自己不受伤害。",
+        "guide": "下雨后带宝宝找蜗牛，观察它的壳。",
+        "task": "找一只蜗牛，观察它怎么走路"
+      },
+      "exercise": {
+        "title": "踏步运动",
+        "items": [
+          "原地踏步：2分钟",
+          "高抬腿踏步：1分钟",
+          "踏步拍手：1分钟"
+        ],
+        "guide": "放音乐跟着节奏踏步，保持呼吸均匀。",
+        "task": "完成3项踏步运动"
+      }
+    },
+    "day27": {
+      "date": "第27天",
+      "poem": {
+        "title": "所见",
+        "author": "清·袁枚",
+        "lines": [
+          "牧童骑黄牛，",
+          "歌声振林樾。",
+          "意欲捕鸣蝉，",
+          "忽然闭口立。"
+        ],
+        "guide": "宝宝，放牛的小朋友想捉知了，突然就不唱歌了。",
+        "task": "跟读2遍，学学牛怎么叫"
+      },
+      "characters": {
+        "items": [
+          {
+            "char": "王",
+            "pinyin": "wáng",
+            "desc": "国王、大王，老虎是森林之王。"
+          },
+          {
+            "char": "玉",
+            "pinyin": "yù",
+            "desc": "玉石亮亮的、滑滑的，很漂亮。"
+          },
+          {
+            "char": "主",
+            "pinyin": "zhǔ",
+            "desc": "主人就是一家之主，爸爸妈妈是家里的主人。"
+          }
+        ],
+        "task": "每个字读3遍，找一找生活中有没有这些字"
+      },
+      "math": {
+        "title": "连加练习",
+        "questions": [
+          "2 + 3 + 1 = ？",
+          "1 + 4 + 2 = ？",
+          "3 + 2 + 2 = ？"
+        ],
+        "answers": [
+          "6",
+          "7",
+          "7"
+        ],
+        "guide": "宝宝一步一步加，先加前两个再加第三个。",
+        "task": "完成3道题，全对贴一颗星⭐"
+      },
+      "english": {
+        "words": [
+          {
+            "word": "in",
+            "meaning": "里面",
+            "emoji": "📥"
+          },
+          {
+            "word": "out",
+            "meaning": "外面",
+            "emoji": "📤"
+          }
+        ],
+        "phrase": "Come in!（请进！）",
+        "guide": "宝宝跟读：in里面📥，out外面📤，请进Come in！",
+        "task": "每个单词读3遍，请人进来时说Come in"
+      },
+      "thinking": {
+        "title": "找相同",
+        "content": "下面哪两个是一样的？🍎🍌🍎🍇🍌",
+        "answer": "第1个和第3个都是🍎，第2个和第5个都是🍌",
+        "guide": "宝宝仔细看，找到相同的两个。",
+        "task": "找出所有相同的配对"
+      },
+      "science": {
+        "title": "为什么鸟儿能飞？",
+        "content": "鸟儿有翅膀和轻骨头。翅膀拍打空气产生力量，轻骨头让身体不重，所以鸟儿能在天上飞。",
+        "guide": "带宝宝看小鸟飞，模仿拍翅膀。",
+        "task": "模仿小鸟飞一飞"
+      },
+      "exercise": {
+        "title": "飞盘游戏",
+        "items": [
+          "正手扔飞盘：扔5次",
+          "反手扔飞盘：扔5次",
+          "接飞盘：接住3次"
+        ],
+        "guide": "用软飞盘，在空地上玩，锻炼手眼协调。",
+        "task": "完成3项飞盘游戏"
+      }
+    },
+    "day28": {
+      "date": "第28天",
+      "poem": {
+        "title": "小儿垂钓",
+        "author": "唐·胡令能",
+        "lines": [
+          "蓬头稚子学垂纶，",
+          "侧坐莓苔草映身。",
+          "路人借问遥招手，",
+          "怕得鱼惊不应人。"
+        ],
+        "guide": "宝宝，小朋友在钓鱼，有人问路他不敢出声怕吓走鱼。",
+        "task": "跟读2遍，模仿钓鱼的动作"
+      },
+      "characters": {
+        "items": [
+          {
+            "char": "见",
+            "pinyin": "jiàn",
+            "desc": "看见就是用眼睛看到，宝宝看见什么了？"
+          },
+          {
+            "char": "听",
+            "pinyin": "tīng",
+            "desc": "听见就是用耳朵听到，宝宝听见鸟叫了吗？"
+          },
+          {
+            "char": "说",
+            "pinyin": "shuō",
+            "desc": "说话就是用嘴巴说出来，宝宝说话真好听。"
+          }
+        ],
+        "task": "每个字读3遍，找一找生活中有没有这些字"
+      },
+      "math": {
+        "title": "趣味算数",
+        "questions": [
+          "妈妈买了5个苹果，爸爸买了3个，一共几个？",
+          "宝宝有7个玩具，给了弟弟2个，还剩几个？",
+          "生日蛋糕上有6根蜡烛，吹灭2根，还剩几根？"
+        ],
+        "answers": [
+          "8个",
+          "5个",
+          "4根"
+        ],
+        "guide": "宝宝用生活里的例子来算，更容易理解。",
+        "task": "完成3道题，全对贴一颗星⭐"
+      },
+      "english": {
+        "words": [
+          {
+            "word": "boy",
+            "meaning": "男孩",
+            "emoji": "👦"
+          },
+          {
+            "word": "girl",
+            "meaning": "女孩",
+            "emoji": "👧"
+          }
+        ],
+        "phrase": "I am a boy/girl.（我是男孩/女孩。）",
+        "guide": "宝宝跟读：boy男孩👦，girl女孩👧，自我介绍I am a boy/girl。",
+        "task": "每个单词读3遍，自我介绍I am a boy/girl"
+      },
+      "thinking": {
+        "title": "排序游戏",
+        "content": "把数字从大到小排：3、7、1、9、5",
+        "answer": "9、7、5、3、1",
+        "guide": "宝宝先找出最大的，再找第二大的。",
+        "task": "从大到小排好数字"
+      },
+      "science": {
+        "title": "为什么企鹅不怕冷？",
+        "content": "企鹅有厚厚的脂肪和密密麻麻的羽毛，像穿了一件防寒服。它们挤在一起还能互相取暖。",
+        "guide": "带宝宝看看企鹅的视频，了解南极动物。",
+        "task": "模仿企鹅走路"
+      },
+      "exercise": {
+        "title": "健身操",
+        "items": [
+          "开合跳：做20个",
+          "体侧运动：左右各10次",
+          "体转运动：左右各10次"
+        ],
+        "guide": "跟着节奏做操，动作做到位。",
+        "task": "完成3项健身操，动作要标准"
+      }
+    },
+    "day29": {
+      "date": "第29天",
+      "poem": {
+        "title": "清明",
+        "author": "唐·杜牧",
+        "lines": [
+          "清明时节雨纷纷，",
+          "路上行人欲断魂。",
+          "借问酒家何处有，",
+          "牧童遥指杏花村。"
+        ],
+        "guide": "宝宝，清明时节下小雨，人们去扫墓想念亲人。",
+        "task": "跟读2遍，说说下雨天做什么"
+      },
+      "characters": {
+        "items": [
+          {
+            "char": "学",
+            "pinyin": "xué",
+            "desc": "学习就是学新东西，宝宝每天都在学习。"
+          },
+          {
+            "char": "习",
+            "pinyin": "xí",
+            "desc": "练习就是反复做，多练习就学会了。"
+          },
+          {
+            "char": "读",
+            "pinyin": "dú",
+            "desc": "读书就是看书上的字，宝宝喜欢读故事。"
+          }
+        ],
+        "task": "每个字读3遍，找一找生活中有没有这些字"
+      },
+      "math": {
+        "title": "认识图形",
+        "questions": [
+          "长方形有几条边？",
+          "正方形有几条边？",
+          "圆形有几条边？"
+        ],
+        "answers": [
+          "4条",
+          "4条",
+          "0条"
+        ],
+        "guide": "宝宝用手画一画，数一数每条边。",
+        "task": "完成3道题，全对贴一颗星⭐"
+      },
+      "english": {
+        "words": [
+          {
+            "word": "bed",
+            "meaning": "床",
+            "emoji": "🛏️"
+          },
+          {
+            "word": "chair",
+            "meaning": "椅子",
+            "emoji": "🪑"
+          }
+        ],
+        "phrase": "Go to bed!（上床睡觉！）",
+        "guide": "宝宝跟读：bed床🛏️，chair椅子🪑，睡觉Go to bed！",
+        "task": "每个单词读3遍，睡觉时说Go to bed"
+      },
+      "thinking": {
+        "title": "空间想象",
+        "content": "箱子里面有什么？妈妈说：圆圆的、甜甜的、红色。（苹果🍎）",
+        "answer": "苹果",
+        "guide": "宝宝根据描述想象箱子里的东西。",
+        "task": "根据描述猜出箱子里的东西"
+      },
+      "science": {
+        "title": "为什么苹果切开会变色？",
+        "content": "苹果切开后，里面的果肉和空气接触，被氧化了，所以变黄。就像铁放久了会生锈一样。",
+        "guide": "切一个苹果给宝宝观察变色过程。",
+        "task": "观察切开的苹果，说说颜色变化"
+      },
+      "exercise": {
+        "title": "弹力带运动",
+        "items": [
+          "拉弹力带：拉15次",
+          "弹力带侧拉：各10次",
+          "弹力带踏步：1分钟"
+        ],
+        "guide": "用幼儿专用弹力带，阻力不要太大。",
+        "task": "完成3项弹力带运动"
+      }
+    },
+    "day30": {
+      "date": "第30天",
+      "poem": {
+        "title": "望天门山",
+        "author": "唐·李白",
+        "lines": [
+          "天门中断楚江开，",
+          "碧水东流至此回。",
+          "两岸青山相对出，",
+          "孤帆一片日边来。"
+        ],
+        "guide": "宝宝，高高的山把江水劈开了，船从远方来。",
+        "task": "跟读2遍，说说山是什么样的"
+      },
+      "characters": {
+        "items": [
+          {
+            "char": "画",
+            "pinyin": "huà",
+            "desc": "画画就是用笔画出来，宝宝画的画真好看。"
+          },
+          {
+            "char": "写",
+            "pinyin": "xiě",
+            "desc": "写字就是写出字来，宝宝会写自己的名字了。"
+          },
+          {
+            "char": "做",
+            "pinyin": "zuò",
+            "desc": "做事情，做手工，宝宝自己能做好多事。"
+          }
+        ],
+        "task": "每个字读3遍，找一找生活中有没有这些字"
+      },
+      "math": {
+        "title": "综合闯关",
+        "questions": [
+          "3 + 6 = ？",
+          "9 - 4 = ？",
+          "5 + 5 = ？"
+        ],
+        "answers": [
+          "9",
+          "5",
+          "10"
+        ],
+        "guide": "宝宝今天来挑战，把学过的都拿出来用！",
+        "task": "完成3道题，全对贴一颗星⭐"
+      },
+      "english": {
+        "words": [
+          {
+            "word": "love",
+            "meaning": "爱",
+            "emoji": "❤️"
+          },
+          {
+            "word": "like",
+            "meaning": "喜欢",
+            "emoji": "👍"
+          }
+        ],
+        "phrase": "I like you!（我喜欢你！）",
+        "guide": "宝宝跟读：love爱❤️，like喜欢👍，表达喜欢I like you！",
+        "task": "每个单词读3遍，对喜欢的人说I like you"
+      },
+      "thinking": {
+        "title": "综合思维",
+        "content": "🔴🟡🔵→按颜色排队，红黄蓝红黄蓝，接下来两个是什么？",
+        "answer": "红🔴、黄🟡",
+        "guide": "宝宝看规律，红黄蓝一直重复。",
+        "task": "找出规律，说接下来是什么"
+      },
+      "science": {
+        "title": "为什么长颈鹿脖子那么长？",
+        "content": "长颈鹿的脖子长，是为了吃到高高的树上的叶子。别的小动物够不着的叶子，长颈鹿能吃到。",
+        "guide": "问问宝宝：如果你有长脖子，想做什么？",
+        "task": "模仿长颈鹿伸长脖子"
+      },
+      "exercise": {
+        "title": "综合运动挑战",
+        "items": [
+          "连续做：蹲起5个+跳5下+跑10米",
+          "计时挑战：看谁先完成3项",
+          "自由选择：宝宝选最喜欢的3项"
+        ],
+        "guide": "把学过的动作组合起来，来一次大挑战！",
+        "task": "完成综合运动挑战，给自己鼓掌"
+      }
+    }
+  }
+};
+const STORAGE = 'dino_v3';
+let state = loadState();
+let curDay = 'day1';
+let curModule = 'poem';
+
+const MODULES = [
+  {key:'poem',icon:'📜',name:'古诗',type:'poem'},
+  {key:'characters',icon:'✏️',name:'识字',type:'characters'},
+  {key:'math',icon:'🔢',name:'算数',type:'math'},
+  {key:'english',icon:'🔤',name:'英语',type:'english'},
+  {key:'thinking',icon:'🧩',name:'思维训练',type:'thinking'},
+  {key:'science',icon:'🔬',name:'科普',type:'science'},
+  {key:'exercise',icon:'🏃',name:'运动游戏',type:'exercise'}
+];
+
+function getDefaultRewards() {
+  return [
+    {id:'r1',name:'看一集动画片',cost:50,desc:'20分钟动画片',claimed:false},
+    {id:'r2',name:'吃一根冰淇淋',cost:80,desc:'选喜欢的口味',claimed:false},
+    {id:'r3',name:'去游乐场玩',cost:200,desc:'周末去一次',claimed:false},
+    {id:'r4',name:'买个新玩具',cost:300,desc:'选一个喜欢的',claimed:false},
+    {id:'r5',name:'吃一顿大餐',cost:500,desc:'选喜欢的餐厅',claimed:false},
+  ];
+}
+
+function loadState() {
+  try {
+    const s = JSON.parse(localStorage.getItem(STORAGE));
+    if (s) {
+      if (!s.rewards) s.rewards = getDefaultRewards();
+      if (s.points === undefined) s.points = 0;
+      if (!s.claimedRewards) s.claimedRewards = {};
+      return s;
+    }
+  } catch(e) {}
+  return {completed:{},streak:0,totalStars:0,points:0,rewards:getDefaultRewards(),claimedRewards:{}};
+}
+function saveState() { localStorage.setItem(STORAGE, JSON.stringify(state)); }
+
+function getDone(day) { return state.completed[day] || {}; }
+function countDone(day) { return Object.values(getDone(day)).filter(v=>v).length; }
+function isDayFull(day) { return countDone(day) === 7; }
+
+// 左侧模块导航
+function renderModuleNav() {
+  const nav = document.getElementById('moduleNav');
+  nav.innerHTML = '';
+  const done = getDone(curDay);
+  MODULES.forEach(m => {
+    const d = document.createElement('div');
+    d.className = 'module-nav-item' + (m.key === curModule ? ' active' : '') + (done[m.key] ? ' completed' : '');
+    d.innerHTML = `<span class="nav-icon">${m.icon}</span><span>${m.name}</span><span class="nav-check">✅</span>`;
+    d.onclick = () => { curModule = m.key; renderAll(); };
+    nav.appendChild(d);
+  });
+}
+
+// 右侧模块内容
+function renderPanel() {
+  const panel = document.getElementById('modulePanel');
+  const day = DATA.days[curDay];
+  const data = day[curModule];
+  const done = getDone(curDay)[curModule];
+  const m = MODULES.find(m=>m.key===curModule);
+  
+  panel.className = 'module-panel ' + m.type;
+  
+  let body = '';
+  if (curModule === 'poem') {
+    body = `<div class="poem-title">《${data.title}》</div><div class="poem-author">${data.author}</div><div class="poem-lines">${data.lines.join('<br>')}</div><div class="guide-box"><span class="guide-label">👨‍👩‍👧 家长引导：</span>${data.guide}</div><div class="task-box"><span class="task-label">✅ 今日任务：</span>${data.task}</div>`;
+  } else if (curModule === 'characters') {
+    body = `<div class="char-grid">${data.items.map(w=>`<div class="char-box"><span class="char">${w.char}</span><span class="pinyin">${w.pinyin}</span></div>`).join('')}</div>${data.items.map(w=>`<div class="char-desc"><strong>${w.char}</strong>（${w.pinyin}）：${w.desc}</div>`).join('')}<div class="guide-box"><span class="guide-label">👨‍👩‍👧 家长引导：</span>带宝宝认读每个字，结合生活理解。多鼓励，多重复。</div><div class="task-box"><span class="task-label">✅ 今日任务：</span>${data.task}</div>`;
+  } else if (curModule === 'math') {
+    body = `<div style="font-weight:700;color:var(--green);font-size:18px;margin-bottom:8px;">${data.title}</div>${data.questions.map((q,i)=>`<div class="math-q">${q}</div><div class="math-answer" id="ans_${i}">答案：${data.answers[i]}</div>`).join('')}<button class="show-answer-btn" onclick="toggleMathAnswers()">👁️ 显示答案</button><div class="guide-box"><span class="guide-label">👨‍👩‍👧 家长引导：</span>${data.guide}</div><div class="task-box"><span class="task-label">✅ 今日任务：</span>${data.task}</div>`;
+  } else if (curModule === 'english') {
+    body = `${data.words.map(w=>`<div class="eng-word"><span class="emoji">${w.emoji}</span><span class="word">${w.word}</span><span class="meaning">${w.meaning}</span></div>`).join('')}<div class="eng-phrase">💬 ${data.phrase}</div><div class="guide-box"><span class="guide-label">👨‍👩‍👧 家长引导：</span>${data.guide}</div><div class="task-box"><span class="task-label">✅ 今日任务：</span>${data.task}</div>`;
+  } else if (curModule === 'thinking') {
+    body = `<div style="font-weight:700;color:#C4A000;font-size:18px;margin-bottom:6px;">${data.title}</div><div class="thinking-content">${data.content}</div><div class="thinking-answer" id="thinkAns">参考答案：${data.answer}</div><button class="show-answer-btn" onclick="document.getElementById('thinkAns').classList.toggle('show')">👁️ 显示答案</button><div class="guide-box"><span class="guide-label">👨‍👩‍👧 家长引导：</span>${data.guide}</div><div class="task-box"><span class="task-label">✅ 今日任务：</span>${data.task}</div>`;
+  } else if (curModule === 'science') {
+    body = `<div style="font-weight:700;color:var(--orange);font-size:18px;margin-bottom:6px;">${data.title}</div><div class="sci-content">${data.content}</div><div class="guide-box"><span class="guide-label">👨‍👩‍👧 家长引导：</span>${data.guide}</div><div class="task-box"><span class="task-label">✅ 今日任务：</span>${data.task}</div>`;
+  } else if (curModule === 'exercise') {
+    body = `${data.items.map(item=>`<div class="exercise-item">${item}</div>`).join('')}<div class="guide-box"><span class="guide-label">👨‍👩‍👧 家长引导：</span>${data.guide}</div><div class="task-box"><span class="task-label">✅ 今日任务：</span>${data.task}</div>`;
+  }
+
+  panel.innerHTML = `
+    <div class="panel-header">
+      <span class="panel-icon">${m.icon}</span>
+      <span class="panel-title">${m.name}</span>
+      <span class="panel-time">⏱️ 8分钟</span>
+    </div>
+    <div class="panel-body">${body}</div>
+    <button class="checkin-btn ${done?'done':''}" onclick="toggleCheckin()">${done?'✅ 已完成':'🦴 打卡完成 (+10🪙)'}</button>
+  `;
+}
+
+function toggleMathAnswers() {
+  const day = DATA.days[curDay];
+  day.math.questions.forEach((_,i) => {
+    const el = document.getElementById('ans_'+i);
+    if (el) el.classList.toggle('show');
+  });
+}
+
+// 打卡
+function toggleCheckin() {
+  if (!state.completed[curDay]) state.completed[curDay] = {};
+  const wasDone = state.completed[curDay][curModule];
+  if (wasDone) {
+    state.completed[curDay][curModule] = false;
+    state.totalStars = Math.max(0, state.totalStars - 1);
+    state.points = Math.max(0, state.points - 10);
+  } else {
+    state.completed[curDay][curModule] = true;
+    state.totalStars++;
+    state.points += 10;
+    showAnim('🦴');
+    showAnim('+10🪙');
+  }
+  updateStreak();
+  saveState();
+  renderAll();
+}
+
+function showAnim(text) {
+  const el = document.createElement('div');
+  el.textContent = text;
+  el.style.cssText = 'position:fixed;top:40%;left:50%;font-size:48px;z-index:9999;pointer-events:none;animation:floatUp 1s ease-out forwards;';
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(),1000);
+}
+const animStyle = document.createElement('style');
+animStyle.textContent = '@keyframes floatUp{0%{transform:translate(-50%,0) scale(0);opacity:1}50%{transform:translate(-50%,-40px) scale(1.5);opacity:1}100%{transform:translate(-50%,-100px) scale(0.5);opacity:0}}';
+document.head.appendChild(animStyle);
+
+function updateStreak() {
+  const days = Object.keys(DATA.days);
+  let s = 0;
+  for (const d of days) { if (isDayFull(d)) s++; }
+  state.streak = s;
+}
+
+// 天数切换
+function prevDay() {
+  const days = Object.keys(DATA.days);
+  const idx = days.indexOf(curDay);
+  if (idx > 0) { curDay = days[idx-1]; curModule = 'poem'; renderAll(); }
+}
+function nextDay() {
+  const days = Object.keys(DATA.days);
+  const idx = days.indexOf(curDay);
+  if (idx < days.length-1) { curDay = days[idx+1]; curModule = 'poem'; renderAll(); }
+}
+
+// 奖励
+function renderRewards() {
+  document.getElementById('pointsTotal').textContent = state.points;
+  document.getElementById('topPoints').textContent = state.points;
+  const list = document.getElementById('rewardList');
+  list.innerHTML = '';
+  state.rewards.forEach(r => {
+    const claimed = state.claimedRewards[r.id] || false;
+    const can = state.points >= r.cost && !claimed;
+    const d = document.createElement('div');
+    d.className = 'reward-item' + (claimed?' claimed':'');
+    d.innerHTML = `<span style="font-size:24px;">🎁</span><div class="reward-info"><div class="reward-name">${r.name}</div><div class="reward-cost">${r.cost} 积分 | ${claimed?'已兑换':'还差'+(r.cost-state.points)+'分'}</div>${r.desc?`<div style="font-size:11px;color:var(--text-light)">${r.desc}</div>`:''}</div><div class="reward-actions"><button class="btn-claim" ${!can?'disabled':''} onclick="claimReward('${r.id}')">${claimed?'已兑':'兑换'}</button><button class="btn-edit" onclick="editReward('${r.id}')">✏️</button><button class="btn-del" onclick="deleteReward('${r.id}')">🗑️</button></div>`;
+    list.appendChild(d);
+  });
+}
+
+function claimReward(id) {
+  const r = state.rewards.find(r=>r.id===id);
+  if (!r || state.points < r.cost || state.claimedRewards[id]) return;
+  state.points -= r.cost;
+  state.claimedRewards[id] = true;
+  saveState(); renderAll();
+  alert('🎉 兑换成功！'+r.name+'\n快去享受你的奖励吧！');
+}
+
+function openRewardModal(eid) {
+  document.getElementById('rewardModal').classList.add('active');
+  if (eid) {
+    const r = state.rewards.find(r=>r.id===eid);
+    if (r) {
+      document.getElementById('modalTitle').textContent='编辑奖励';
+      document.getElementById('rewardName').value=r.name;
+      document.getElementById('rewardCost').value=r.cost;
+      document.getElementById('rewardDesc').value=r.desc||'';
+      document.getElementById('rewardEditId').value=eid;
+      return;
+    }
+  }
+  document.getElementById('modalTitle').textContent='添加奖励';
+  document.getElementById('rewardName').value='';
+  document.getElementById('rewardCost').value='';
+  document.getElementById('rewardDesc').value='';
+  document.getElementById('rewardEditId').value='';
+}
+function closeRewardModal() { document.getElementById('rewardModal').classList.remove('active'); }
+function saveReward() {
+  const name = document.getElementById('rewardName').value.trim();
+  const cost = parseInt(document.getElementById('rewardCost').value);
+  const desc = document.getElementById('rewardDesc').value.trim();
+  const eid = document.getElementById('rewardEditId').value;
+  if (!name) return alert('请输入奖励名称');
+  if (!cost || cost<1) return alert('请输入积分数');
+  if (eid) {
+    const idx = state.rewards.findIndex(r=>r.id===eid);
+    if (idx>=0) { state.rewards[idx].name=name; state.rewards[idx].cost=cost; state.rewards[idx].desc=desc; }
+  } else {
+    state.rewards.push({id:'r'+Date.now(),name,cost,desc,claimed:false});
+  }
+  saveState(); closeRewardModal(); renderAll();
+}
+function editReward(id) { openRewardModal(id); }
+function deleteReward(id) {
+  if (!confirm('确定删除？')) return;
+  state.rewards = state.rewards.filter(r=>r.id!==id);
+  delete state.claimedRewards[id];
+  saveState(); renderAll();
+}
+
+// 通用更新
+function renderAll() {
+  const day = DATA.days[curDay];
+  const cnt = countDone(curDay);
+  document.getElementById('dayLabel').textContent = day.date;
+  document.getElementById('dayBadge').textContent = cnt+'/7 完成';
+  document.getElementById('progressLabel').textContent = cnt+'/7';
+  document.getElementById('progressBar').style.width = (cnt/7*100)+'%';
+  document.getElementById('sPoints').textContent = state.points;
+  document.getElementById('sStars').textContent = state.totalStars;
+  document.getElementById('totalStars').textContent = state.totalStars;
+  document.getElementById('streakNum').textContent = state.streak;
+  const cd = Object.keys(DATA.days).filter(d=>isDayFull(d)).length;
+  document.getElementById('sDays').textContent = cd;
+  document.getElementById('badge1').classList.toggle('unlocked',cd>=1);
+  document.getElementById('badge3').classList.toggle('unlocked',state.streak>=3);
+  document.getElementById('badge5').classList.toggle('unlocked',state.streak>=5);
+  document.getElementById('badge7').classList.toggle('unlocked',state.streak>=7);
+  document.getElementById('badge15').classList.toggle('unlocked',cd>=15);
+  document.getElementById('badge30').classList.toggle('unlocked',cd>=30);
+  renderModuleNav();
+  renderPanel();
+  renderRewards();
+}
+
+renderAll();
+</script>
+</body>
+</html>
